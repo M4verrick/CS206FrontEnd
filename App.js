@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./screens/LoginScreen"; // Adjust the path if necessary
 import MeetingConfigurationScreen from "./screens/MeetingConfiguration";
-import NewTeamScreen from "./screens/CreateMeeting";
+import NewTeamScreen from "./screens/CreateTeam";
 import TestPage from "./screens/Testpage";
 import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
@@ -30,9 +30,9 @@ export default function App() {
           options={{ headerShown: true, title: "Meeting Configuration" }}
         />
         <Stack.Screen
-          name="CreateMeeting"
+          name="CreateTeam"
           component={NewTeamScreen}
-          options={{ headerShown: true, title: "CreateMeeting" }}
+          options={{ headerShown: true, title: "CreateTeam" }}
         />
         <Stack.Screen
           name="Testpage"
