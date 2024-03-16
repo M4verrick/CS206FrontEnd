@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -8,10 +8,39 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = () => {
-    navigation.navigate('Login');
-    console.log('Signing up...');
+  const handleSignUp = async () => {
+    const user = {
+      userName: username,
+      userEmail: email,
+      userPassword: password,
+    };
+  
+    try {
+      const response = await fetch('http://10.87.13.193:8080/api/v1/user/addUser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+  
+      if (response.ok) {
+        const result = await response.text(); // Changed from response.json() to response.text()
+        console.log('User registered:', result);
+        Alert.alert("Success", "User registered successfully.", [
+          { text: "OK", onPress: () => navigation.navigate('Login') }
+        ]);
+      } else {
+        const errorResult = await response.text(); // Assuming the server sends the error details as text
+        console.error('Error signing up:', errorResult);
+        Alert.alert("Sign Up Failed", errorResult);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      Alert.alert("Network Error", "An error occurred. Please try again later.");
+    }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,6 +77,9 @@ const SignUpScreen = () => {
     </SafeAreaView>
   );
 };
+
+// Styles remain the same
+
 
 const styles = StyleSheet.create({
   container: {
