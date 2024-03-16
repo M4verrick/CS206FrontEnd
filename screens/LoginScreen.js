@@ -6,34 +6,39 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleLoginPress = async () => {
-    try {
-        const response = await fetch(`http://10.87.13.193:8080/api/v1/user/email/password/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        });
+    navigation.navigate('Testpage');
+    
+      // try {
+      //     const response = await fetch(`http://10.87.13.193:8080/api/v1/user/email/password/login`, {
+      //         method: 'POST',
+      //         headers: {
+      //             'Content-Type': 'application/json',
+      //         },
+      //         body: JSON.stringify({
+      //             email: email,
+      //             password: password,
+      //         }),
+      //     });
+  
+      //     console.log('Response:', response); // Log the full response
+      //     console.log('Status Code:', response.status); // Log the status code
+  
+      //     if (response.ok) {
+      //         // Login successful
+      //         const data = await response.json(); // assuming the server returns a JSON response
+      //         console.log('Login successful:', data);
+      //         navigation.navigate('NextPage'); // Navigate to the next page after successful login
+      //     } else {
+      //         // Handle login error
+      //         const errorData = await response.text(); // You can also use response.json() if your server sends JSON
+      //         console.error('Login failed:', errorData);
+      //     }
+      // } catch (error) {
+      //     console.error('Network error:', error);
+      // }
 
-        console.log('Response:', response); // Log the full response
-        console.log('Status Code:', response.status); // Log the status code
-
-        if (response.ok) {
-            // Login successful
-            const data = await response.json(); // assuming the server returns a JSON response
-            console.log('Login successful:', data);
-            navigation.navigate('NextPage'); // Navigate to the next page after successful login
-        } else {
-            // Handle login error
-            const errorData = await response.text(); // You can also use response.json() if your server sends JSON
-            console.error('Login failed:', errorData);
-        }
-    } catch (error) {
-        console.error('Network error:', error);
-    }
+  
+    // IMPLEMENTING BACKEND API CALL...STILL TRYNA DO IT 
 };
 
 
