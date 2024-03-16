@@ -10,7 +10,7 @@ const TestPage = ({ navigation }) => {
       />
       <Button
         title="Go to Create Team"
-        onPress={() => navigation.navigate('CreateMeeting')}
+        onPress={() => navigation.navigate('CreateTeam')}
       />
       <Button
         title="Go to Common Timeslots"
