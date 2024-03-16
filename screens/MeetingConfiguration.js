@@ -1,41 +1,79 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, Platform } from 'react-native';
-import Modal from 'react-native-modal'; // Correct import for react-native-modal
-import { FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, FlatList, View } from 'react-native';
+import Modal from 'react-native-modal';
 
-// Define the teams array with default values
 const teams = ["CS205", "CS202", "CS201"];
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const timeSlots = ['8-12', '12-16', '16-20', '20-24'];
 
 const MeetingConfigurationScreen = () => {
-  const [selectedTeam, setSelectedTeam] = useState();
+  const [selectedTeam, setSelectedTeam] = useState('');
   const [meetingName, setMeetingName] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('');
   const [selectedFrequency, setSelectedFrequency] = useState('');
-  const [preferredDates, setPreferredDates] = useState('');
-  const [preferredTimings, setPreferredTimings] = useState('');
-  const [isPickerModalVisible, setPickerModalVisible] = useState(false);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedTimings, setSelectedTimings] = useState([]);
+  const [isTeamPickerModalVisible, setTeamPickerModalVisible] = useState(false);
+  const [isDateModalVisible, setDateModalVisible] = useState(false);
+  const [isTimeModalVisible, setTimeModalVisible] = useState(false);
 
-
-  // Function to handle the creation of a meeting
   const handleCreateMeeting = () => {
-    // TODO: Logic to handle the creation of the meeting
     console.log('Create Meeting with the following configuration', {
       selectedTeam,
       meetingName,
       selectedDuration,
       selectedFrequency,
-      preferredDates,
-      preferredTimings,
+      selectedDates,
+      selectedTimings,
     });
   };
+
   const renderTeamItem = ({ item }) => (
     <TouchableOpacity
       style={styles.teamItem}
       onPress={() => {
         setSelectedTeam(item);
-        setPickerModalVisible(false);
+        setTeamPickerModalVisible(false);
       }}>
       <Text style={styles.teamItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectDate = (day) => {
+    setSelectedDates((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day);
+      } else {
+        return [...prev, day];
+      }
+    });
+  };
+
+  const renderDateItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectDate(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedDates.includes(item) ? '✓' : ''}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectTime = (time) => {
+    setSelectedTimings((prev) => {
+      if (prev.includes(time)) {
+        return prev.filter((t) => t !== time);
+      } else {
+        return [...prev, time];
+      }
+    });
+  };
+
+  const renderTimeItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectTime(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedTimings.includes(item) ? '✓' : ''}</Text>
     </TouchableOpacity>
   );
 
@@ -46,14 +84,14 @@ const MeetingConfigurationScreen = () => {
       <Text style={styles.label}>Team</Text>
       <TouchableOpacity
         style={styles.input}
-        onPress={() => setPickerModalVisible(true)}
+        onPress={() => setTeamPickerModalVisible(true)}
       >
         <Text style={styles.inputText}>{selectedTeam || 'Select Team'}</Text>
       </TouchableOpacity>
 
       <Modal
-        isVisible={isPickerModalVisible}
-        onBackdropPress={() => setPickerModalVisible(false)}
+        isVisible={isTeamPickerModalVisible}
+        onBackdropPress={() => setTeamPickerModalVisible(false)}
         style={styles.modal}
       >
         <View style={styles.modalContent}>
@@ -64,7 +102,6 @@ const MeetingConfigurationScreen = () => {
           />
         </View>
       </Modal>
-    
 
       <Text style={styles.label}>Meeting Name</Text>
       <TextInput
@@ -74,7 +111,6 @@ const MeetingConfigurationScreen = () => {
         placeholder="Enter Meeting Name"
         placeholderTextColor="#999"
       />
-
 
       <Text style={styles.label}>Duration of Meeting</Text>
       <View style={styles.buttonGroup}>
@@ -109,20 +145,52 @@ const MeetingConfigurationScreen = () => {
       </View>
 
       <Text style={styles.label}>Preferred Set of Dates</Text>
-      <TextInput
+      <TouchableOpacity
         style={styles.input}
-        value={preferredDates}
-        onChangeText={setPreferredDates}
-        placeholder="Select Dates"
-      />
+        onPress={() => setDateModalVisible(true)}
+      >
+        <Text style={styles.inputText}>
+          {selectedDates.length > 0 ? selectedDates.join(', ') : 'Select Dates'}
+        </Text>
+      </TouchableOpacity>
+
+      <Modal
+        isVisible={isDateModalVisible}
+        onBackdropPress={() => setDateModalVisible(false)}
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
+          <FlatList
+            data={days}
+            renderItem={renderDateItem}
+            keyExtractor={(item) => item}
+          />
+        </View>
+      </Modal>
 
       <Text style={styles.label}>Preferred Timings</Text>
-      <TextInput
+      <TouchableOpacity
         style={styles.input}
-        value={preferredTimings}
-        onChangeText={setPreferredTimings}
-        placeholder="Select Timing"
-      />
+        onPress={() => setTimeModalVisible(true)}
+      >
+        <Text style={styles.inputText}>
+          {selectedTimings.length > 0 ? selectedTimings.join(', ') : 'Select Timing'}
+        </Text>
+      </TouchableOpacity>
+
+      <Modal
+        isVisible={isTimeModalVisible}
+        onBackdropPress={() => setTimeModalVisible(false)}
+        style={styles.modal}
+      >
+        <View style={styles.modalContent}>
+          <FlatList
+            data={timeSlots}
+            renderItem={renderTimeItem}
+            keyExtractor={(item) => item}
+          />
+        </View>
+      </Modal>
 
       <TouchableOpacity
         style={styles.createButton}
@@ -154,6 +222,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  checkboxLabel: {
+    fontSize: 18,
+  },
+  checkbox: {
+    fontSize: 18,
+    color: 'black',
+  },
   inputText: {
     fontSize: 16,
     color: '#333',
@@ -182,16 +266,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
   },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#d0d0d0',
-    borderRadius: 10,
-    marginBottom: 20,
-    marginTop: 5,
-  },
-  picker: {
-    height: 50,
-  },
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -208,20 +282,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 5,
     marginTop: 5,
-    backgroundColor: '#fff', // Default background
+    backgroundColor: '#fff',
   },
   selectedButton: {
-    backgroundColor: 'black', // Background for selected button
+    backgroundColor: 'black',
   },
   buttonText: {
-    color: 'black', // Text color for unselected buttons
+    color: 'black',
     textAlign: 'center',
-  },
-  selectedButtonText: {
-    color: 'white', // Text color for selected buttons
-  },
-  placeholderText: {
-    color: '#999',
   },
   createButton: {
     backgroundColor: 'black',
