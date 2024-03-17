@@ -1,23 +1,34 @@
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSignUp = async () => {
     const user = {
+      userId: Math.floor(Math.random() * 1000) + 1,
       userName: username,
       userEmail: email,
       userPassword: password,
     };
-    navigation.navigate('Testpage');
-  
+    navigation.navigate("Testpage");
+
     // try {
-      
+
     //   const response = await fetch('http://10.87.13.193:8080/api/v1/user/addUser', {
     //     method: 'POST',
     //     headers: {
@@ -25,7 +36,7 @@ const SignUpScreen = () => {
     //     },
     //     body: JSON.stringify(user),
     //   });
-  
+
     //   if (response.ok) {
     //     const result = await response.text(); // Changed from response.json() to response.text()
     //     console.log('User registered:', result);
@@ -42,13 +53,14 @@ const SignUpScreen = () => {
     //   Alert.alert("Network Error", "An error occurred. Please try again later.");
     // }
 
-
     //BACKEND INTEGRATED AND TESTED....BLOCKED OUT AS I TESTED W PERSONAL IP
   };
-  
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <Text style={styles.logo}>Sign Up</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username</Text>
@@ -79,53 +91,52 @@ const SignUpScreen = () => {
       <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
         <Text style={styles.loginButtonText}>Sign Up</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
 // Styles remain the same
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   logo: {
     marginBottom: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 50,
-    color: 'black',
+    color: "black",
   },
   inputContainer: {
-    width: '80%',
+    width: "80%",
   },
   label: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginLeft: 40, // Adjust the value to match the margin of the LoginScreen
-    color: 'black', // Use the color from your LoginScreen
-    fontWeight: 'bold', // Use the font weight from your LoginScreen
+    color: "black", // Use the color from your LoginScreen
+    fontWeight: "bold", // Use the font weight from your LoginScreen
     marginBottom: 5, // Adjust spacing if needed
   },
   input: {
     height: 50,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
     marginVertical: 10,
   },
   loginButton: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
   },
   loginButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
 });

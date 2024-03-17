@@ -7,6 +7,7 @@ import NewTeamScreen from "./screens/CreateTeam";
 import TestPage from "./screens/Testpage";
 import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
+import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,11 @@ export default function App() {
           name="CommonTimeslots"
           component={CommonTimeslots}
           options={{ headerShown: true, title: "CommonTimeslots" }}
+        />
+        <Stack.Screen
+          name="RescheduleMeeting"
+          component={RescheduleMeetingScreen}
+          options={{ headerShown: true, title: "RescheduleMeeting" }}
         />
 
         {/* ...other screens if any */}

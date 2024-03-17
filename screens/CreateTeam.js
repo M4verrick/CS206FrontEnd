@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Platform,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const NewTeamScreen = () => {
-  const [teamName, setTeamName] = useState('');
+  const [teamName, setTeamName] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -39,7 +47,7 @@ const NewTeamScreen = () => {
 
       <Text style={styles.label}>Group Duration</Text>
       <Text style={styles.smallText}>
-        * team will be auto-deleted after the given time period
+        * Team will be auto-deleted after the given time period
       </Text>
 
       <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
@@ -57,7 +65,7 @@ const NewTeamScreen = () => {
           is24Hour={true}
           display="default"
           onChange={(event, selectedDate) => {
-            setShowStartDatePicker(Platform.OS === 'ios');
+            setShowStartDatePicker(Platform.OS === "ios");
             setStartDate(selectedDate || startDate);
           }}
         />
@@ -76,7 +84,7 @@ const NewTeamScreen = () => {
           is24Hour={true}
           display="default"
           onChange={(event, selectedDate) => {
-            setShowEndDatePicker(Platform.OS === 'ios');
+            setShowEndDatePicker(Platform.OS === "ios");
             setEndDate(selectedDate || endDate);
           }}
         />
@@ -105,11 +113,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
     marginBottom: 10,
+    padding: 10,
   },
   smallText: {
     fontSize: 12,
     color: "#666",
     marginBottom: 10,
+    fontWeight: "bold",
   },
   input: {
     backgroundColor: "#f0f0f0",
@@ -132,6 +142,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
+  },
+  datePickerText: {
+    padding: 10,
   },
 });
 
