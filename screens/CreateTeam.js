@@ -16,6 +16,10 @@ const NewTeamScreen = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  // get a list of user IDs and register them using my notification function
+  // call notification function here
+
+
 
   const handleCreateTeam = () => {
     // TODO: Logic for creating a new team with the provided details
