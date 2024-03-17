@@ -9,8 +9,8 @@ const TestPage = ({ navigation }) => {
         onPress={() => navigation.navigate('MeetingConfiguration')}
       />
       <Button
-        title="Go to Meeting Creation"
-        onPress={() => navigation.navigate('CreateMeeting')}
+        title="Go to Create Team"
+        onPress={() => navigation.navigate('CreateTeam')}
       />
       <Button
         title="Go to Common Timeslots"
