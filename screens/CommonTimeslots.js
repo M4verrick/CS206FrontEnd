@@ -6,31 +6,88 @@ const theme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        primary: 'black', // Set primary color to black
-        background: 'white', // Set background color to white
-        text: 'black', // Set text color to black
+        primary: 'black',
+        background: 'white',
+        text: 'black',
     },
 };
 
-const CommonTimeslots = () => {
-    const [checkboxStates, setCheckboxStates] = React.useState([false, false]);
-    const handleCheckboxPress = (index) => {
+const CommonTimeslots = ({ meetingId, userId }) => {
+    const [checkboxStates, setCheckboxStates] = useState([]);
+    const [timeslots, setTimeslots] = useState([]);
+    const [hasUserVoted, setHasUserVoted] = useState(false); // New state to track user's vote
+
+    // GET getMeeting
+    const fetchMeeting = async () => {
+        try {
+            const response = await fetch(`${API_URL}/meeting/${meetingId}/getMeeting`);
+            const data = await response.json();
+            console.log("Fetched Data:", data); // Debugging line to see fetched data structure
+            const fetchedTimeslots = data.meetingAvailabilities ? Object.keys(data.meetingAvailabilities) : [];
+            console.log("Fetched Timeslots:", fetchedTimeslots); // Debugging line to see fetched timeslots
+
+            // Updating states sequentially to ensure they are based on the correct data
+            setTimeslots(fetchedTimeslots);
+            setCheckboxStates(fetchedTimeslots.map(() => false)); // This ensures checkbox states are reset based on the fetched timeslots
+            setHasUserVoted(data.hasUserVoted[meetingId]); // Adjust this based on actual logic to determine if user has voted
+        } catch (error) {
+            console.error('Error fetching meeting details:', error);
+        }
+    };
+    useEffect(() => {
+        fetchMeeting();
+    }, []);
+
+    // GET getCommonAvailabilities
+    const fetchCommonAvailabilities = async () => {
+        try {
+          const response = await fetch(`${API_URL}/meeting/${meetingId}/getCommonAvailabilities`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          // Now you have your common availabilities in 'data', which you can then set in state
+          setTimeslots(data); // Assuming the data is directly the array/map of timeslots
+        } catch (error) {
+          console.error('Error fetching common availabilities:', error);
+        }
+      };
+    useEffect(() => {
+        fetchCommonAvailabilities(); // Add this to fetch common availabilities on component mount
+        fetchMeeting();
+    }, []);
+
+    const handleCheckboxPress = async (index) => {
         const newCheckboxStates = [...checkboxStates];
         newCheckboxStates[index] = !newCheckboxStates[index];
         setCheckboxStates(newCheckboxStates);
-    };
 
-    const [timeslots, setTimeslots] = useState([]);
-    useEffect(() => {
-        fetch(`http://localhost:8080/api/v1/meeting/${meetingId}/getCommonAvailabilities`)
-            .then(response => response.json())
-            .then(data => {
-                const fetchedTimeslots = Object.keys(data); // Assuming API returns an object with timeslots as keys
-                setTimeslots(fetchedTimeslots);
-                setCheckboxStates(new Array(fetchedTimeslots.length).fill(false)); // Initialize all checkboxes as unchecked
-            })
-            .catch(error => console.error('Error fetching timeslots:', error));
-    }, [meetingId]);
+        const availabilityMap = timeslots.reduce((map, timeslot, idx) => {
+            map[timeslot] = newCheckboxStates[idx];
+            return map;
+          }, {});
+
+        // PUT addVote
+        try {
+            // Assuming you pass the availability map in the body, adjust as per your API
+            const response = await fetch(`${API_URL}/meeting/${meetingId}/${userId}/addVote`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ availabilityMap }),
+            });
+            if (response.ok) {
+                // Handle successful vote
+                console.log('Vote successfully recorded');
+                setHasUserVoted(true); // Update the vote status
+            } else {
+                console.error('Failed to record vote');
+            }
+        } catch (error) {
+            console.error('Error submitting vote:', error);
+        }
+    };
 
     return (
         <PaperProvider theme={theme}>
@@ -50,23 +107,11 @@ const CommonTimeslots = () => {
                         <Checkbox
                             status={checkboxStates[index] ? 'checked' : 'unchecked'}
                             onPress={() => handleCheckboxPress(index)}
+                            disabled={Object.values(hasUserVoted).some(vote => vote)} // Disable based on vote status
                         />
                     </View>
                 </Card>
             ))}
-
-            {/* <Card style={styles.card}>
-                <View style={styles.row}>
-                    <View style={styles.dateTime}>
-                    <Text style={styles.dateTimeText}>18/01/24</Text>
-                    <Text style={styles.dateTimeText}>2pm-4pm</Text>
-                </View>
-                <Checkbox
-                    status={checkboxStates[1] ? 'checked' : 'unchecked'}
-                    onPress={() => handleCheckboxPress(1)}
-                />
-                </View>
-            </Card> */}
 
             <Button mode="outlined" style={styles.button}>View my Calendar</Button>
 

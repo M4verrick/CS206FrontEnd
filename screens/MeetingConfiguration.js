@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, FlatList, View } from 'react-native';
 import Modal from 'react-native-modal';
 
-const teams = ["CS205", "CS202", "CS201"];
+// const teams = ["CS205", "CS202", "CS201"];
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const timeSlots = ['8-12', '12-16', '16-20', '20-24'];
 
@@ -17,65 +17,53 @@ const MeetingConfigurationScreen = () => {
   const [isDateModalVisible, setDateModalVisible] = useState(false);
   const [isTimeModalVisible, setTimeModalVisible] = useState(false);
 
-  const handleCreateMeeting = () => {
-    console.log('Create Meeting with the following configuration', {
-      selectedTeam,
-      meetingName,
-      selectedDuration,
-      selectedFrequency,
-      selectedDates,
-      selectedTimings,
-    });
-  };
+  const [teams, setTeams] = useState([]); // State to hold the teams data
 
-  const renderTeamItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.teamItem}
-      onPress={() => {
-        setSelectedTeam(item);
-        setTeamPickerModalVisible(false);
-      }}>
-      <Text style={styles.teamItemText}>{item}</Text>
-    </TouchableOpacity>
-  );
-
-  const handleSelectDate = (day) => {
-    setSelectedDates((prev) => {
-      if (prev.includes(day)) {
-        return prev.filter((d) => d !== day);
-      } else {
-        return [...prev, day];
+  // GET getAllTeams
+  const fetchTeams = async () => {
+      try {
+        const response = await fetch(`${API_URL}/user/${userId}/getAllTeams`); // Adjust the API URL as needed
+        const data = await response.json();
+        setTeams(data); // Assuming the response is an array of team names
+      } catch (error) {
+        console.error('Error fetching teams:', error);
       }
-    });
-  };
+    };
+  useEffect(() => {
+    fetchTeams();
+  }, []);
 
-  const renderDateItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => handleSelectDate(item)}>
-      <Text style={styles.checkboxLabel}>{item}</Text>
-      <Text style={styles.checkbox}>{selectedDates.includes(item) ? '✓' : ''}</Text>
-    </TouchableOpacity>
-  );
-
-  const handleSelectTime = (time) => {
-    setSelectedTimings((prev) => {
-      if (prev.includes(time)) {
-        return prev.filter((t) => t !== time);
+  // POST createMeeting
+  const handleCreateMeeting = async () => {
+    // console.log('Create Meeting with the following configuration', {
+    //   selectedTeam,
+    //   meetingName,
+    //   selectedDuration,
+    //   selectedFrequency,
+    //   selectedDates,
+    //   selectedTimings,
+    // });
+    try {
+      const response = await fetch(`${API_URL}/meeting/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/createMeeting`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(meetingConfig),
+      });
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Meeting successfully created:', data);
+        // Navigate to CommonTimeslots with the new meeting ID
+        navigation.navigate('CommonTimeslots', { meetingId: data.meetingId });
       } else {
-        return [...prev, time];
+        console.error('Failed to create meeting', data);
       }
-    });
+    } catch (error) {
+      console.error('Error creating meeting:', error);
+    }
   };
-
-  const renderTimeItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => handleSelectTime(item)}>
-      <Text style={styles.checkboxLabel}>{item}</Text>
-      <Text style={styles.checkbox}>{selectedTimings.includes(item) ? '✓' : ''}</Text>
-    </TouchableOpacity>
-  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -201,6 +189,57 @@ const MeetingConfigurationScreen = () => {
     </ScrollView>
   );
 };
+
+  const renderTeamItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.teamItem}
+      onPress={() => {
+        setSelectedTeam(item);
+        setTeamPickerModalVisible(false);
+      }}>
+      <Text style={styles.teamItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectDate = (day) => {
+    setSelectedDates((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day);
+      } else {
+        return [...prev, day];
+      }
+    });
+  };
+
+  const renderDateItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectDate(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedDates.includes(item) ? '✓' : ''}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectTime = (time) => {
+    setSelectedTimings((prev) => {
+      if (prev.includes(time)) {
+        return prev.filter((t) => t !== time);
+      } else {
+        return [...prev, time];
+      }
+    });
+  };
+
+  const renderTimeItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectTime(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedTimings.includes(item) ? '✓' : ''}</Text>
+    </TouchableOpacity>
+  );
+
+  
 
 const styles = StyleSheet.create({
   modal: {
