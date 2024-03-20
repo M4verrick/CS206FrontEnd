@@ -1,4 +1,4 @@
-import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import { registerIndieID } from "native-notify";
 import axios from "axios";
 
 const sendNotificationToGroup = (subIds) => {

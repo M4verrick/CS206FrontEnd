@@ -18,8 +18,10 @@ const NewTeamScreen = () => {
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   // get a list of user IDs and register them using my notification function
   // call notification function here
-
-
+  const [userIDs, setUserIds] = useState([]);
+  const handleRegisterUser = (newUserId) => {
+    setUserIds((currentIds) => [...currentIds, newUserId]);
+  };
 
   const handleCreateTeam = () => {
     // TODO: Logic for creating a new team with the provided details

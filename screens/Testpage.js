@@ -20,6 +20,10 @@ const TestPage = ({ navigation }) => {
         title="Go to Reschedule Meeting"
         onPress={() => navigation.navigate("RescheduleMeeting")}
       />
+      <Button
+        title="Go to Meeting List"
+        onPress={() => navigation.navigate("MeetingList")}
+      />
     </View>
   );
 };
