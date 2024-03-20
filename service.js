@@ -1,5 +1,6 @@
 import axios from "axios";
 
+//need change to ip address
 const API_URL = "http://localhost:8080/api/v1/";
 axios.defaults.withCredentials = true
 
@@ -91,10 +92,29 @@ const getAllMeetingsInTeam = (teamId) => {
     });
 }
 
-const TeamService = {
+const connectGoogleCalendar = (userId) => {
+    return axios.get
+    (API_URL + `Google/${userId}/startOAuth`, {
+        userId
+    },)
+    .then((response) => {
+        const link = response.data;
+        return link;
+    })
+    .catch((error) => {
+        console.error("Error getting google link: ", error)
+        throw error;
+    })
+    
+}
+
+const Service = {
     createTeam,
     addUser,
     deleteTeamById,
     getTeamById,
     getAllMeetingsInTeam,
+    connectGoogleCalendar
 }
+
+export default Service;
