@@ -1,4 +1,3 @@
-// screens/RescheduleMeetingScreen.js
 import React from "react";
 import {
   View,
@@ -7,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -17,7 +17,6 @@ const RescheduleMeetingScreen = ({ navigation }) => {
   };
 
   const handleRescheduleDecline = () => {
-    // Take the user back to the previous screen
     navigation.goBack();
     console.log("Reschedule declined");
   };
@@ -25,22 +24,25 @@ const RescheduleMeetingScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Reschedule Meeting for CS 301? </Text>
+        <Ionicons name="calendar" size={60} color="#4e5d78" />
+        <Text style={styles.title}>Reschedule CS 301?</Text>
         <Text style={styles.warning}>
-          WARNING: This action cannot be undone!
+          WARNING: This action cannot be undone.
         </Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, styles.confirmButton]}
             onPress={handleRescheduleConfirm}
           >
-            <Text style={styles.buttonText}>Yes</Text>
+            <Ionicons name="checkmark-circle" size={24} color="white" />
+            <Text style={styles.buttonText}>Confirm</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, styles.declineButton]}
             onPress={handleRescheduleDecline}
           >
-            <Text style={styles.buttonText}>No</Text>
+            <Ionicons name="close-circle" size={24} color="white" />
+            <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -53,13 +55,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#00000080", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.8)", // Darker semi-transparent background
   },
   card: {
+    marginBottom: "auto",
+    marginTop: 220,
     backgroundColor: "white",
     borderRadius: 20,
     padding: 40,
-    height: 300,
+    width: screenWidth * 0.85,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -68,37 +72,45 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     elevation: 5,
   },
   title: {
-    paddingBottom: 20,
-    fontWeight: "bold",
-    fontSize: 20,
-    marginBottom: 10,
+    marginTop: 20,
+    fontWeight: "600",
+    fontSize: 22,
+    color: "#4e5d78",
+    textAlign: "center",
   },
   warning: {
-    fontSize: 15,
-    color: "red",
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 16,
+    color: "#e63946",
+    fontWeight: "600",
+    marginVertical: 20,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "90%",
-    paddingTop: 20,
+    justifyContent: "space-around",
+    width: "100%",
   },
   button: {
-    backgroundColor: "#E8E8E8",
-    padding: 10,
-    borderRadius: 10,
-    width: "40%",
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 30,
+    flexDirection: "row",
     alignItems: "center",
   },
+  confirmButton: {
+    backgroundColor: "#2a9d8f",
+  },
+  declineButton: {
+    backgroundColor: "#e63946",
+  },
   buttonText: {
-    color: "#000",
-    fontWeight: "bold",
+    marginLeft: 10,
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
   },
 });
 

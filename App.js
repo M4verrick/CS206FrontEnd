@@ -8,6 +8,7 @@ import TestPage from "./screens/Testpage";
 import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
 import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
+import MeetingList from "./screens/MeetingList";
 
 const Stack = createStackNavigator();
 
@@ -49,6 +50,11 @@ export default function App() {
           name="RescheduleMeeting"
           component={RescheduleMeetingScreen}
           options={{ headerShown: true, title: "RescheduleMeeting" }}
+        />
+        <Stack.Screen
+          name="MeetingList"
+          component={MeetingList}
+          options={{ headerShown: true, title: "Meetings" }}
         />
 
         {/* ...other screens if any */}
