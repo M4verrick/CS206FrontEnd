@@ -7,9 +7,9 @@ export const useUserContext = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState([]);
 
-  const loginUser = (email, otherData) => {
+  const loginUser = (email) => {
     // Store user data in array
-    setUserInfo([...userInfo, { email, ...otherData }]);
+    setUserInfo([...userInfo, { email }]);
   };
 
   return (

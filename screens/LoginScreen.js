@@ -9,10 +9,11 @@ import {
   SafeAreaView,
 } from "react-native";
 import Service from "../service";
-
+import { useUserContext } from "../UserContext";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { loginUser } = useUserContext();
 
   const handleLoginPress = async () => {
     try {
@@ -20,6 +21,7 @@ const LoginScreen = ({ navigation }) => {
       if (isAuthenticated) {
         // If the login is successful, navigate to the TestScreen
         console.log("Login Successful");
+        loginUser(email);
         navigation.navigate("Testpage");
       } else {
         // If the credentials are wrong, alert the user
