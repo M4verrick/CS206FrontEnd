@@ -1,62 +1,55 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import Service from "../service";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLoginPress = async () => {
-    navigation.navigate('Testpage');
-    
-      // try {
-      //     const response = await fetch(`http://10.87.13.193:8080/api/v1/user/email/password/login`, {
-      //         method: 'POST',
-      //         headers: {
-      //             'Content-Type': 'application/json',
-      //         },
-      //         body: JSON.stringify({
-      //             email: email,
-      //             password: password,
-      //         }),
-      //     });
-  
-      //     console.log('Response:', response); // Log the full response
-      //     console.log('Status Code:', response.status); // Log the status code
-  
-      //     if (response.ok) {
-      //         // Login successful
-      //         const data = await response.json(); // assuming the server returns a JSON response
-      //         console.log('Login successful:', data);
-      //         navigation.navigate('NextPage'); // Navigate to the next page after successful login
-      //     } else {
-      //         // Handle login error
-      //         const errorData = await response.text(); // You can also use response.json() if your server sends JSON
-      //         console.error('Login failed:', errorData);
-      //     }
-      // } catch (error) {
-      //     console.error('Network error:', error);
-      // }
+    try {
+      const isAuthenticated = await Service.login(email, password);
+      if (isAuthenticated) {
+        // If the login is successful, navigate to the TestScreen
+        console.log("Login Successful");
+        navigation.navigate("Testpage");
+      } else {
+        // If the credentials are wrong, alert the user
+        Alert.alert(
+          "Login Failed",
+          "The email or password you entered is incorrect."
+        );
+      }
+    } catch (error) {
+      // If there was an error in the login process, inform the user
+      Alert.alert(
+        "Login Error",
+        "There was a problem logging in. Please try again."
+      );
+    }
+  };
 
-  
-    // IMPLEMENTING BACKEND API CALL...STILL TRYNA DO IT 
-};
-
-
-  
   const handleForgotPasswordPress = () => {
     // TODO: Navigate to your Forgot Password Screen
-    console.log('Forgot Password pressed');
+    console.log("Forgot Password pressed");
   };
 
   const handleSignUpPress = () => {
-    // TODO: Navigate to your Sign Up Screen
-    console.log('Sign pressed');
+    navigation.navigate("SignUp");
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require('../assets/Logo.png')} style={styles.logo} />
+        <Image source={require("../assets/Logo.png")} style={styles.logo} />
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Email</Text>
@@ -77,14 +70,20 @@ const LoginScreen = ({ navigation }) => {
           secureTextEntry
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => handleLoginPress(email, password)}
+      >
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleForgotPasswordPress}>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignUpPress}>
-        <Text style={styles.signUp}>Don’t have an account? Sign up <Text style={styles.signUpHere}>HERE</Text></Text>
+        <Text style={styles.signUp}>
+          Don’t have an account? Sign up{" "}
+          <Text style={styles.signUpHere}>HERE</Text>
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -93,55 +92,53 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   logoContainer: {
     marginBottom: 30,
   },
   logo: {
     height: 100, // Adjust based on your logo's aspect ratio
-    resizeMode: 'contain', // or 'cover', depending on your preference
+    resizeMode: "contain", // or 'cover', depending on your preference
   },
   inputContainer: {
-    width: '80%',
+    width: "80%",
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     height: 50,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
     marginVertical: 10,
   },
   loginButton: {
-    backgroundColor: 'black',
+    backgroundColor: "black",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
   },
   loginButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
   forgotPassword: {
-    color: 'blue',
+    color: "blue",
     marginVertical: 10,
   },
   signUp: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
-    },
-    signUpHere: {
-    textDecorationLine: 'underline',
-    }
-    });
-    
-    export default LoginScreen;
-    
-    
+  },
+  signUpHere: {
+    textDecorationLine: "underline",
+  },
+});
+
+export default LoginScreen;
