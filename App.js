@@ -9,56 +9,59 @@ import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
 import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
 import MeetingList from "./screens/MeetingList";
+import { UserProvider } from "./UserContext";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SignUp">
-        <Stack.Screen
-          name="SignUp"
-          component={SignUpScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="MeetingConfiguration"
-          component={MeetingConfigurationScreen}
-          options={{ headerShown: true, title: "Meeting Configuration" }}
-        />
-        <Stack.Screen
-          name="CreateTeam"
-          component={NewTeamScreen}
-          options={{ headerShown: true, title: "CreateTeam" }}
-        />
-        <Stack.Screen
-          name="Testpage"
-          component={TestPage}
-          options={{ headerShown: true, title: "Testpage" }}
-        />
-        <Stack.Screen
-          name="CommonTimeslots"
-          component={CommonTimeslots}
-          options={{ headerShown: true, title: "CommonTimeslots" }}
-        />
-        <Stack.Screen
-          name="RescheduleMeeting"
-          component={RescheduleMeetingScreen}
-          options={{ headerShown: true, title: "RescheduleMeeting" }}
-        />
-        <Stack.Screen
-          name="MeetingList"
-          component={MeetingList}
-          options={{ headerShown: true, title: "Meetings" }}
-        />
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SignUp">
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MeetingConfiguration"
+            component={MeetingConfigurationScreen}
+            options={{ headerShown: true, title: "Meeting Configuration" }}
+          />
+          <Stack.Screen
+            name="CreateTeam"
+            component={NewTeamScreen}
+            options={{ headerShown: true, title: "CreateTeam" }}
+          />
+          <Stack.Screen
+            name="Testpage"
+            component={TestPage}
+            options={{ headerShown: true, title: "Testpage" }}
+          />
+          <Stack.Screen
+            name="CommonTimeslots"
+            component={CommonTimeslots}
+            options={{ headerShown: true, title: "CommonTimeslots" }}
+          />
+          <Stack.Screen
+            name="RescheduleMeeting"
+            component={RescheduleMeetingScreen}
+            options={{ headerShown: true, title: "RescheduleMeeting" }}
+          />
+          <Stack.Screen
+            name="MeetingList"
+            component={MeetingList}
+            options={{ headerShown: true, title: "Meetings" }}
+          />
 
-        {/* ...other screens if any */}
-      </Stack.Navigator>
-    </NavigationContainer>
+          {/* ...other screens if any */}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
   );
 }
