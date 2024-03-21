@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+
 import {
   View,
   Text,
@@ -11,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import Service from "../service";
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -18,14 +20,16 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = async () => {
-    const user = {
-      userId: Math.floor(Math.random() * 1000) + 1,
-      userName: username,
-      userEmail: email,
-      userPassword: password,
-    };
-    navigation.navigate("Testpage");
+  const handleSignUp = () => {
+    Service.signUp(username, email, password)
+      .then(() => {
+        // Navigate to the Login screen upon successful sign-up
+        navigation.navigate("Login");
+      })
+      .catch((error) => {
+        // handle sign-up errors (e.g., show an alert or set error message state)
+        console.error("Sign up error:", error);
+      });
 
     // try {
 
@@ -88,14 +92,15 @@ const SignUpScreen = () => {
           secureTextEntry
         />
       </View>
-      <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => handleSignUp(username, email, password)}
+      >
         <Text style={styles.loginButtonText}>Sign Up</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
-
-// Styles remain the same
 
 const styles = StyleSheet.create({
   container: {
