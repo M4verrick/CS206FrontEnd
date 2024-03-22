@@ -9,7 +9,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import Service from "../service";
-import { useUserContext } from "../UserContext";
+import { useUserContext } from "./UserContext";
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

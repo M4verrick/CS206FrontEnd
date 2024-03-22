@@ -9,7 +9,7 @@ import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
 import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
 import MeetingList from "./screens/MeetingList";
-import { UserProvider } from "./UserContext";
+import { UserProvider } from "./screens/UserContext";
 
 const Stack = createStackNavigator();
 
