@@ -1,7 +1,8 @@
 import React from "react";
+import registerNNPushToken from "native-notify";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import LoginScreen from "./screens/LoginScreen"; // Adjust the path if necessary
+import LoginScreen from "./screens/LoginScreen";
 import MeetingConfigurationScreen from "./screens/MeetingConfiguration";
 import NewTeamScreen from "./screens/CreateTeam";
 import TestPage from "./screens/Testpage";
@@ -9,15 +10,17 @@ import CommonTimeslots from "./screens/CommonTimeslots";
 import SignUpScreen from "./screens/SignUpScreen";
 import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
 import MeetingList from "./screens/MeetingList";
-import { UserProvider } from "./UserContext";
+import { UserProvider } from "./screens/UserContext";
+import NotifTest from "./screens/NotifTest";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+  registerNNPushToken(20328, "yo2NfEZ8YjS8ZvKH1iQspw");
   return (
     <UserProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="SignUp">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen
             name="SignUp"
             component={SignUpScreen}
@@ -52,6 +55,11 @@ export default function App() {
             name="RescheduleMeeting"
             component={RescheduleMeetingScreen}
             options={{ headerShown: true, title: "RescheduleMeeting" }}
+          />
+          <Stack.Screen
+            name="NotifTest"
+            component={NotifTest}
+            options={{ headerShown: true, title: "NotifTest" }}
           />
           <Stack.Screen
             name="MeetingList"

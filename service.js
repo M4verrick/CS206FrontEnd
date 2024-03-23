@@ -1,30 +1,27 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://172.20.10.3:8080/api/v1/";
+const API_URL = "http://192.168.1.112:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
-const signUp = (userName, userEmail, userPassword) => {
-  return axios
-    .post(
+const signUp = async (userName, userEmail, userPassword) => {
+  try {
+    const response = await axios.post(
       API_URL + `user/${userName}/${userEmail}/${userPassword}/signUp`,
       {
         userName,
         userEmail,
         userPassword,
       },
-      { withCredentials: true }
-    )
-    .then((response) => {
-      const data = response.data;
-      console.log("Signup successful:", data);
-      // process the success response
-    })
-    .catch((error) => {
-      console.error("Error during signup:", error);
-      throw error;
-    });
+      { withCredentials: true, timeout: 5000 }
+    );
+    const data = response.data;
+    console.log("Signup successful:", data);
+  } catch (error) {
+    console.error("Error during signup:", error);
+    throw error;
+  }
 };
 
 // @PostMapping("{userEmail}/{userPassword}/login")

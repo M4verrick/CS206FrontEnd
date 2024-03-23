@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { registerIndieID, unregisterIndieDevice } from "native-notify";
 
 import {
   View,
@@ -23,6 +24,7 @@ const SignUpScreen = () => {
   const handleSignUp = () => {
     Service.signUp(username, email, password)
       .then(() => {
+        registerIndieID(email, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
         // Navigate to the Login screen upon successful sign-up
         navigation.navigate("Login");
       })

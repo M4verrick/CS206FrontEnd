@@ -8,8 +8,10 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
+import axios from "axios";
 import Service from "../service";
-import { useUserContext } from "../UserContext";
+import { useUserContext } from "./UserContext";
+import { registerIndieID, unregisterIndieDevice } from "native-notify";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +22,7 @@ const LoginScreen = ({ navigation }) => {
       const isAuthenticated = await Service.login(email, password);
       if (isAuthenticated) {
         // If the login is successful, navigate to the TestScreen
+        registerIndieID(email, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
         console.log("Login Successful");
         loginUser(email);
         navigation.navigate("Testpage");

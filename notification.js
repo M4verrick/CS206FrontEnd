@@ -2,17 +2,18 @@ import { registerIndieID } from "native-notify";
 import axios from "axios";
 
 const sendNotificationToGroup = (subIds) => {
-  for (let i = 0; i < subIds.length; i++) {
-    // register each user
-    registerIndieID(subIds[i], 19951, "HGVUixSBBBrdpJbzgm8sZf");
-  }
+  console.log("in notif function " + subIds);
+  // for (let i = 0; i < subIds.length; i++) {
+  //   // register each user
+  //   registerIndieID(subIds[i], 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
+  // }
   axios
-    .post(`https://app.nativenotify.com/api/indie/group/notification`, {
+    .post(`https://app.nativenotify.com/api/indie/notification`, {
       subIDs: subIds,
-      appId: 19951,
-      appToken: "HGVUixSBBBrdpJbzgm8sZf",
-      title: "SchedEase",
-      message: "Everyone has joined Team CS 301.",
+      appId: 20328,
+      appToken: "yo2NfEZ8YjS8ZvKH1iQspw",
+      title: "put your push notification title here as a string",
+      message: "put your push notification message here as a string",
     })
     .then((response) => {
       console.log("Notification sent successfully:", response.data);
@@ -31,30 +32,9 @@ const registerForPushNotification = (userId) => {
   // Implement the registration logic here
 };
 
-// Function to retrieve a team entity and register user IDs for push notifications
-const retrieveTeamAndRegisterUsers = async (teamId) => {
-  try {
-    const response = await fetch(`/api/teams/${teamId}`);
-    if (!response.ok) {
-      throw new Error(`Error fetching team: ${response.statusText}`);
-    }
-    const teamEntity = await response.json();
-    // Assuming user IDs are stored in an array property called `userIds`
-    const userIds = teamEntity.userIds;
-
-    userIds.forEach((userId) => {
-      registerForPushNotification(userId);
-    });
-  } catch (error) {
-    console.error("Failed to retrieve team and register users:", error);
-  }
-};
-
-// Example usage
-retrieveTeamAndRegisterUsers("yourTeamIdHere");
-
-export const handleNotifyPress = (allMembersSubIds) => {
+export const handleNotifyPress = (subIds) => {
   // array of member ids
   // call the function directly by passing in array of members id.
-  sendNotificationToGroup(allMembersSubIds);
+  console.log(subIds);
+  sendNotificationToGroup(subIds);
 };
