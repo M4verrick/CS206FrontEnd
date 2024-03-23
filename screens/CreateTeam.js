@@ -21,22 +21,7 @@ const NewTeamScreen = () => {
   };
 
   const handleCreateTeam = () => {
-    if (teamName.trim() && teamEmails.length > 0) {
-      Service.createTeam(teamName.trim(), teamEmails)
-        .then(() => {
-          Alert.alert('Success', 'Your team has been created successfully!');
-          // Reset the form or navigate to another screen as needed
-          setTeamName('');
-          setTeamEmails([]);
-        })
-        .catch((error) => {
-          console.error('Error creating team:', error);
-          // Here you could extract and show more detailed error messages if your API provides them
-          Alert.alert('Error', 'There was a problem creating your team. Please try again.');
-        });
-    } else {
-      Alert.alert('Invalid Input', 'Please enter a team name and at least one team member email.');
-    }
+  
   };
 
 
