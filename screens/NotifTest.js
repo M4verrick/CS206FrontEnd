@@ -4,31 +4,37 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { useUserContext } from "./UserContext";
 
-const sendNotificationToUsers = (emails) => {
-  axios
-    .post(`https://app.nativenotify.com/api/indie/group/notification`, {
-      subID: emails,
-      appId: 20328,
-      appToken: "yo2NfEZ8YjS8ZvKH1iQspw",
-      title: "Meeting has been rescheduled",
-      message: "Say Waaaaaat",
-    })
-    .then((response) => {
-      console.log("Notification sent successfully:", response.data);
-    })
-    .catch((error) => {
-      console.error("Error sending notification:", error);
-    });
+const sendNotificationToUsers = (emails, team) => {
+  emails.forEach((email) => {
+    axios
+      .post(`https://app.nativenotify.com/api/indie/notification`, {
+        subID: email, // Use the current email in the iteration
+        appId: 20328,
+        appToken: "yo2NfEZ8YjS8ZvKH1iQspw",
+        title: "Rescheduled meeting",
+        message: `Meeting for ${team} has been rescheduled.`, // Template literal for team variable
+      })
+      .then((response) => {
+        console.log(
+          `Notification sent successfully to ${email}:`,
+          response.data
+        );
+      })
+      .catch((error) => {
+        console.error(`Error sending notification to ${email}:`, error);
+      });
+  });
 };
 
 const NotifTest = ({ navigation }) => {
   const { userInfo } = useUserContext();
   const emails = userInfo.map((user) => user.email);
+  const team = "CS 301";
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => sendNotificationToUser(emails)}
+        onPress={() => sendNotificationToUsers(emails, team)}
       >
         <Text style={styles.buttonText}>
           Press here to send notification to your user.

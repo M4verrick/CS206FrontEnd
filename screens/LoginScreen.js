@@ -21,6 +21,7 @@ const LoginScreen = ({ navigation }) => {
       const isAuthenticated = await Service.login(email, password);
       if (isAuthenticated) {
         // If the login is successful, navigate to the TestScreen
+        // register each individual user to be able to receive notifications
         registerIndieID(email, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
         console.log("Login Successful");
         loginUser(email);
