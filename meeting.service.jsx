@@ -206,4 +206,7 @@ const MeetingService = {
     getCommonAvailabilities,
     rescheduleMeeting,
     addVote,
+    rescheduleMeetingForConsecutive,
+    deleteConsecutiveMeetings,
+    deleteMeeting
 }
