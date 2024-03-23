@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { useMeetingIdContext } from "../path/to/MeetingIdContext"; // Adjust the import path as necessary
+import { useMeetingIdContext } from "../MeetingIdContext";
 
 const MeetingList = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
