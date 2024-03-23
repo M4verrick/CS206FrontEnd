@@ -46,22 +46,22 @@ const login = async (userEmail, userPassword) => {
 
 // @PostMapping("/{teamName}/{teamEmails}/createTeam")
 // public ResponseEntity<Team> createTeam
-const createTeam = async (teamName, teamUserEmails) => {
-  try {
-    const response = await axios.post(
-      API_URL + `${teamName}/createTeam`, // Template literal for dynamic path segment
-      {
-        teamUserEmails: [...teamUserEmails] // Convert Set to Array for the request body
-      },
-      { withCredentials: true, timeout: 5000 } // Axios config options
-    );
-    const teamData = response.data;
-    console.log("Team creation successful:", teamData);
-    return teamData; // Return the created team data
-  } catch (error) {
-    console.error("Error during team creation:", error);
-    throw error; // Re-throw the error to be handled by the caller
-  }
+const createTeam = (teamName, teamUserEmails) => {
+  return axios
+    .post(
+      `${API_URL}team/${teamName}/createTeam`, // Ensure the URL is constructed correctly
+      { teamUserEmails }, // Pass teamUserEmails in the request body
+      { withCredentials: true }
+    )
+    .then((response) => {
+      const inSet = response.data;
+      console.log(inSet);
+      return inSet; // It's a good practice to return the data from your promise chain
+    })
+    .catch((error) => {
+      console.error("Error creating team:", error);
+      throw error; // Re-throwing the error is fine, but make sure you handle it where you call createTeam
+    });
 };
 
 
