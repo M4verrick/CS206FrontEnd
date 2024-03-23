@@ -58,12 +58,17 @@ const getMeeting = (meetingId) => {
     });
 }
 
-// @PostMapping("/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{DurationInSeconds}/createMeeting")
-// public ResponseEntity<Meeting> createMeeting
-const createMeeting = (teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, DurationInSeconds) => {
+// @PostMapping("/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{durationInSeconds}/{frequency}/createMeeting")
+// public ResponseEntity<?> createMeeting(@PathVariable(value = "teamId") String teamId,
+//                                        @PathVariable(value = "meetingName") String meetingName,
+//                                        @PathVariable(value = "firstDateTimeLimit") LocalDateTime firstDateTimeLimit,
+//                                        @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
+//                                        @PathVariable(value = "frequency") String frequency,
+//                                        @PathVariable(value = "durationInSeconds") long durationInSeconds)
+const createMeeting = (teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, durationInSeconds, frequency) => {
     return axios.post
-    (API_URL + `meeting/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${DurationInSeconds}/createMeeting`, {
-        teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, DurationInSeconds
+    (API_URL + `meeting/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/${frequency}/createMeeting`, {
+        teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, durationInSeconds, frequency
     }, 
         { withCredentials: true,}
     )
@@ -96,12 +101,17 @@ const getCommonAvailabilities = (meetingId) => {
     });
 }
 
-// @PutMapping("{meetingId}/rescheduleMeeting")
-// public ResponseEntity<Meeting> rescheduleMeeting
-const rescheduleMeeting = (meetingId) => {
+// @PostMapping("{meetingId}/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{durationInSeconds}/rescheduleMeeting")
+//     public ResponseEntity<?> rescheduleMeeting(@PathVariable(value = "meetingId") String meetingId,
+//                                                @PathVariable(value = "teamId") String teamId,
+//                                                @PathVariable(value = "meetingName") String meetingName,
+//                                                @PathVariable(value = "firstDateTimeLimit") LocalDateTime firstDateTimeLimit,
+//                                                @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
+//                                                @PathVariable(value = "durationInSeconds") long durationInSeconds)
+const rescheduleMeeting = (meetingId, teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, durationInSeconds) => {
     return axios.put
-    (API_URL + `meeting/${meetingId}/rescheduleMeeting`, {
-        meetingId
+    (API_URL + `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/rescheduleMeeting`, {
+        meetingId, teamId, meetingName,firstDateTimeLimit,lastDateTimeLimit, durationInSeconds
     }, 
         {withCredentials: true,}
     )
@@ -138,6 +148,54 @@ const addVote = (meetingId, userId, availabilitiesVotes) => {
         console.error("Error fetching information:", error);
         throw error;
     });
+}
+
+// @PostMapping("{meetingId}/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{durationInSeconds}/{frequency}/rescheduleMeetingForConsecutive")
+// public ResponseEntity<?> rescheduleMeetingforAllConsecutive(@PathVariable(value = "meetingId") String meetingId,
+//                                            @PathVariable(value = "teamId") String teamId,
+//                                            @PathVariable(value = "meetingName") String meetingName,
+//                                            @PathVariable(value = "firstDateTimeLimit") LocalDateTime firstDateTimeLimit,
+//                                            @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
+//                                            @PathVariable(value = "frequency") String frequency,
+//                                            @PathVariable(value = "durationInSeconds") long durationInSeconds)
+const rescheduleMeetingForConsecutive = (meetingId, teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, durationInSeconds, frequency) => {
+    return axios.post
+    (API_URL + `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/
+                        ${durationInSeconds}/${frequency}/rescheduleMeetingForConsecutive`, {
+        meetingId, teamId, meetingName, firstDateTimeLimit, lastDateTimeLimit, durationInSeconds, frequency
+    }, 
+        { withCredentials: true,}
+    )
+    .then((response) => { 
+        const inSet = response.data;
+        console.log(inSet)
+    })
+    .catch((error) => {
+        console.error("Error fetching information:", error);
+        throw error;
+    });
+}
+
+// @DeleteMapping("{meetingId}/deleteConsecutiveMeetings")
+// public ResponseEntity<?> deleteConsecutiveMeetings
+const deleteConsecutiveMeetings = (meetingId) => {
+    return axios.delete
+    (API_URL + `meeting/${meetingId}/deleteConsecutiveMeetings`, {
+        meetingId
+    },
+        { withCredentials: true, }
+    )
+}
+
+// @DeleteMapping("{meetingId}/deleteMeeting")
+// public ResponseEntity<?> deleteMeeting (@PathVariable (value = "meetingId") String meetingId)
+const deleteMeeting = (meetingId) => {
+    return axios.delete
+    (API_URL + `meeting/${meetingId}/deleteMeeting`, {
+        meetingId
+    },
+        { withCredentials: true, }
+    )
 }
 
 const MeetingService = {
