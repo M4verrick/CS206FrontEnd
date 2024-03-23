@@ -8,7 +8,6 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
-import axios from "axios";
 import Service from "../service";
 import { useUserContext } from "./UserContext";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
