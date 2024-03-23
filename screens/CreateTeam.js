@@ -6,98 +6,67 @@ import {
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Platform,
+  FlatList,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 const NewTeamScreen = () => {
   const [teamName, setTeamName] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-  // get a list of user IDs and register them using my notification function
-  // call notification function here
-  const [userIDs, setUserIds] = useState([]);
-  const handleRegisterUser = (newUserId) => {
-    setUserIds((currentIds) => [...currentIds, newUserId]);
+  const [email, setEmail] = useState("");
+  const [teamEmails, setTeamEmails] = useState([]);
+
+  const handleAddEmail = () => {
+    if (email && !teamEmails.includes(email)) {
+      setTeamEmails([...teamEmails, email]);
+      setEmail(""); // Clear input field after adding email
+    }
   };
 
   const handleCreateTeam = () => {
-    // TODO: Logic for creating a new team with the provided details
-    console.log("Creating new team:", teamName, startDate, endDate);
-  };
-  const onChangeStartDate = (event, selectedDate) => {
-    const currentDate = selectedDate || startDate;
-    setShowStartDatePicker(Platform.OS === "ios");
-    setStartDate(currentDate); // Make sure currentDate is a Date object
+    console.log("Creating new team:", teamName, teamEmails);
+    // Logic to call createTeam API will be added here
   };
 
-  const onChangeEndDate = (event, selectedDate) => {
-    const currentDate = selectedDate || endDate;
-    setShowEndDatePicker(Platform.OS === "ios");
-    setEndDate(currentDate);
-  };
+  const renderEmailItem = ({ item }) => (
+    <View style={styles.emailListItem}>
+      <Text style={styles.emailText}>{item}</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>New Team</Text>
-
+      <Text style={styles.header}>Create a New Team</Text>
       <Text style={styles.label}>Team Name</Text>
       <TextInput
         style={styles.input}
         value={teamName}
         onChangeText={setTeamName}
-        placeholder="Fill In Here"
+        placeholder="Enter team name"
       />
 
-      <Text style={styles.label}>Group Duration</Text>
-      <Text style={styles.smallText}>
-        * Team will be auto-deleted after the given time period
-      </Text>
-
-      <TouchableOpacity onPress={() => setShowStartDatePicker(true)}>
-        <Text style={styles.datePickerText}>
-          Start Date:{" "}
-          {startDate instanceof Date ? startDate.toDateString() : "Not a date"}
-        </Text>
-      </TouchableOpacity>
-
-      {showStartDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={startDate}
-          mode="date"
-          is24Hour={true}
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowStartDatePicker(Platform.OS === "ios");
-            setStartDate(selectedDate || startDate);
-          }}
+      <Text style={styles.label}>Add Team Members</Text>
+      <View style={styles.emailInputContainer}>
+        <TextInput
+          style={styles.emailInput}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Enter teammate's email"
+          autoCapitalize="none"
+          keyboardType="email-address"
         />
-      )}
-      <TouchableOpacity onPress={() => setShowEndDatePicker(true)}>
-        <Text style={styles.datePickerText}>
-          End Date: {endDate.toDateString()}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddEmail}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
 
-      {showEndDatePicker && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={endDate}
-          mode="date"
-          is24Hour={true}
-          display="default"
-          onChange={(event, selectedDate) => {
-            setShowEndDatePicker(Platform.OS === "ios");
-            setEndDate(selectedDate || endDate);
-          }}
-        />
-      )}
+      <FlatList
+        data={teamEmails}
+        renderItem={renderEmailItem}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.emailList}
+      />
 
       <TouchableOpacity style={styles.button} onPress={handleCreateTeam}>
-        <Text style={styles.buttonText}>Create New Team</Text>
+        <Text style={styles.buttonText}>Create Team</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -114,31 +83,64 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: "#333",
   },
   label: {
     fontSize: 16,
     marginTop: 20,
     marginBottom: 10,
-    padding: 10,
-  },
-  smallText: {
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 10,
-    fontWeight: "bold",
+    color: "#333",
   },
   input: {
     backgroundColor: "#f0f0f0",
-    borderRadius: 10,
+    borderRadius: 5,
     padding: 15,
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
     fontSize: 16,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#d0d0d0",
+  },
+  emailInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  emailInput: {
+    flex: 1,
+    marginRight: 8,
+    padding: 15,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#d0d0d0",
+  },
+  addButton: {
+    backgroundColor: "#34A853",
+    width: 50,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 25,
+  },
+  addButtonText: {
+    color: "#fff",
+    fontSize: 24,
+  },
+  emailList: {
+    marginTop: 20,
+  },
+  emailListItem: {
+    backgroundColor: "#e1e1e1",
+    padding: 10,
+    marginTop: 5,
+    borderRadius: 5,
+  },
+  emailText: {
+    color: "#333",
   },
   button: {
-    backgroundColor: "black",
-    borderRadius: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 5,
     padding: 15,
     alignItems: "center",
     justifyContent: "center",
@@ -148,9 +150,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
-  },
-  datePickerText: {
-    padding: 10,
   },
 });
 

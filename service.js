@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://172.20.10.3:8080/api/v1/";
+const API_URL = "http://10.87.13.193:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -46,25 +46,24 @@ const login = async (userEmail, userPassword) => {
 
 // @PostMapping("/{teamName}/{teamEmails}/createTeam")
 // public ResponseEntity<Team> createTeam
-const createTeam = (teamName, teamEmails) => {
-  return axios
-    .post(
-      API_URL + `team/${teamName}/${teamEmails}/createTeam`,
+const createTeam = async (teamName, teamUserEmails) => {
+  try {
+    const response = await axios.post(
+      API_URL + `${teamName}/createTeam`, // Template literal for dynamic path segment
       {
-        teamName,
-        teamEmails,
+        teamUserEmails: [...teamUserEmails] // Convert Set to Array for the request body
       },
-      { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
+      { withCredentials: true, timeout: 5000 } // Axios config options
+    );
+    const teamData = response.data;
+    console.log("Team creation successful:", teamData);
+    return teamData; // Return the created team data
+  } catch (error) {
+    console.error("Error during team creation:", error);
+    throw error; // Re-throw the error to be handled by the caller
+  }
 };
+
 
 // @PutMapping("/{userId}/{teamId}/addUser")
 // public ResponseEntity<String> addUser
