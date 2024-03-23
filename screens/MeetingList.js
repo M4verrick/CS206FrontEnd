@@ -8,50 +8,71 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
-import { useMeetingIdContext } from "../path/to/MeetingIdContext"; // Adjust the import path as necessary
+import { useMeetingIdContext } from "../MeetingIdContext"; // Ensure the correct path is used
+import MeetingService from "../meetingService"; // Import your getMeeting function
 
 const MeetingList = ({ navigation }) => {
-  const [meetings, setMeetings] = useState([]);
-  const { meetingIds } = useMeetingIdContext(); // Assuming you're storing meeting IDs here
+  const [upcomingMeetings, setUpcomingMeetings] = useState([]);
+  const [pendingMeetings, setPendingMeetings] = useState([]);
+  const { meetingIds } = useMeetingIdContext();
 
   useEffect(() => {
     const fetchMeetings = async () => {
-      try {
-        const meetingsData = await Promise.all(
-          meetingIds.map((id) =>
-            axios.get(`${API_URL}meeting/${id}/getMeeting`, {
-              withCredentials: true,
-            })
-          )
-        );
-        setMeetings(meetingsData.map((response) => response.data));
-      } catch (error) {
-        console.error("Error fetching meetings:", error);
-        Alert.alert("Error", "Could not fetch meetings.");
+      const fetchedMeetings = [];
+      for (let id of meetingIds) {
+        try {
+          const meeting = await MeetingService.getMeeting(id);
+          fetchedMeetings.push(meeting);
+        } catch (error) {
+          console.error("Error fetching meeting:", error);
+          // Optionally handle the error e.g., by setting an error state or showing an alert
+        }
       }
+
+      // Categorize meetings into upcoming and pending
+      const upcoming = fetchedMeetings.filter((m) => m.isMeetingSet);
+      const pending = fetchedMeetings.filter((m) => !m.isMeetingSet);
+      setUpcomingMeetings(upcoming);
+      setPendingMeetings(pending);
     };
 
     fetchMeetings();
-  }, [meetingIds]); // Re-run when meetingIds changes
+  }, [meetingIds]);
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        {meetings.map((meeting) => (
-          <View key={meeting.id} style={styles.meetingCard}>
-            <Text style={styles.courseText}>{meeting.meetingName}</Text>
-            <Text style={styles.descriptionText}>
-              Start: {meeting.meetingStartDateTime.toString()} - End:{" "}
-              {meeting.meetingEndDateTime.toString()}
-            </Text>
-            {/* Render other meeting details as needed */}
-          </View>
-        ))}
+        <View style={styles.meetingsContainer}>
+          <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
+          {upcomingMeetings.map((meeting) => (
+            <View key={meeting.id} style={styles.meetingCard}>
+              <Text style={styles.courseText}>{meeting.meetingName}</Text>
+              {/* Format the dates as needed */}
+              <Text style={styles.descriptionText}>{meeting.description}</Text>
+              {/* Add appropriate fields based on your actual meeting object */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("RescheduleMeeting")}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>Reschedule</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.meetingsContainer}>
+          <Text style={styles.sectionTitle}>Pending Meetings</Text>
+          {pendingMeetings.map((meeting) => (
+            <View key={meeting.id} style={styles.meetingCard}>
+              <Text style={styles.courseText}>{meeting.meetingName}</Text>
+              {/* Add appropriate fields based on your actual meeting object */}
+            </View>
+          ))}
+        </View>
       </ScrollView>
       <TouchableOpacity
         onPress={() => {
-          /* handle new meeting */
+          /* Implement the logic for creating a new meeting */
         }}
         style={styles.floatingButton}
       >
