@@ -50,7 +50,7 @@ const createTeam = (teamName, teamUserEmails) => {
   return axios
     .post(
       `${API_URL}team/${teamName}/createTeam`, // Ensure the URL is constructed correctly
-      { teamUserEmails }, // Pass teamUserEmails in the request body
+      teamUserEmails, // Directly pass teamUserEmails as the request body
       { withCredentials: true }
     )
     .then((response) => {

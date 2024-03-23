@@ -19,9 +19,17 @@ const NewTeamScreen = () => {
   const handleDeleteEmail = (emailToDelete) => {
     setTeamEmails(prevEmails => prevEmails.filter(email => email !== emailToDelete));
   };
-
-  const handleCreateTeam = () => {
   
+  const handleCreateTeam = async () => {
+    try {
+      const response = await Service.createTeam(teamName, teamEmails);
+      // Handle the response as needed, perhaps navigating to a new screen or showing a success message
+      Alert.alert('Team Created', `Team ${teamName} has been successfully created.`);
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      Alert.alert('Error', 'There was a problem creating the team. Please try again.');
+      console.error(error);
+    }
   };
 
 
