@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://192.168.1.112:8080/api/v1/";
+const API_URL = "http://172.20.10.3:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -24,20 +24,24 @@ const signUp = async (userName, userEmail, userPassword) => {
   }
 };
 
+//login
 // @PostMapping("{userEmail}/{userPassword}/login")
-const login = (userEmail, userPassword) => {
-  return axios
-    .post(API_URL + `user/${userEmail}/${userPassword}/login`)
-    .then((response) => {
-      const isAuthenticated = response.data;
-      // isAuthenticated will be true or false based on your backend response
-      return isAuthenticated;
-    })
-    .catch((error) => {
-      console.error("Error during login:", error);
-      // Handle errors appropriately
-      throw error;
-    });
+const login = async (userEmail, userPassword) => {
+  try {
+    const response = await axios.post(
+      API_URL + `user/${userEmail}/${userPassword}/login`,
+      {},
+      {
+        timeout: 5000, // Timeout set to 5000 milliseconds (5 seconds)
+      }
+    );
+    const isAuthenticated = response.data;
+    return isAuthenticated;
+  } catch (error) {
+    console.error("Error during login:", error);
+    // error handling
+    throw error;
+  }
 };
 
 // @PostMapping("/{teamName}/{teamEmails}/createTeam")

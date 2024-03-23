@@ -9,33 +9,32 @@ import {
   SafeAreaView,
 } from "react-native";
 import Service from "../service";
-import { useUserContext } from "../UserContext";
+import { useMeetingIdContext } from "../MeetingIdContext";
 import { useUserIdContext } from "../UserIdContext";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { addMeetingIds } = useMeetingIdContext();
   const { addUserId } = useUserIdContext();
 
   const handleLoginPress = async () => {
     try {
-      const isAuthenticated = await Service.login(email, password);
-      if (isAuthenticated) {
-        // If the login is successful, navigate to the TestScreen
-        // register each individual user to be able to receive notifications
-        registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
-        console.log("Login Successful");
-        addUserId(user.id);
-        navigation.navigate("Testpage");
+      const user = await Service.login(email, password);
+      if (user) {
+        console.log("Login Successful", user);
+        addUserId(user.id); // Add the user ID to your context or state management
+        registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw"); // Register for notifications
+        addMeetingIds([...user.userMeetingIds]);
+        navigation.navigate("Testpage"); // Navigate to the next screen
       } else {
-        // If the credentials are wrong, alert the user
+        // If the user entity is not returned, treat it as a failed login
         Alert.alert(
           "Login Failed",
           "The email or password you entered is incorrect."
         );
       }
     } catch (error) {
-      // If there was an error in the login process, inform the user
       Alert.alert(
         "Login Error",
         "There was a problem logging in. Please try again."

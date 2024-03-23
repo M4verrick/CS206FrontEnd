@@ -1,73 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useUserIdContext } from "../UserIdContext";
-import MeetingService from "../meeting.service";
+import axios from "axios";
+import { useMeetingIdContext } from "../path/to/MeetingIdContext"; // Adjust the import path as necessary
 
 const MeetingList = ({ navigation }) => {
-  // Dummy data for the meetings
-  const upcomingMeetings = [
-    {
-      id: 1,
-      course: "CS 206",
-      description: "Weekly Meeting",
-      date: "17/01/24",
-      time: "1100 - 1200",
-    },
-    // ... add other meetings
-  ];
+  const [meetings, setMeetings] = useState([]);
+  const { meetingIds } = useMeetingIdContext(); // Assuming you're storing meeting IDs here
 
-  const pendingMeetings = [
-    {
-      id: 4,
-      course: "CS 101",
-      description: "First Meeting",
-      status: "Pending Timing",
-      votes: "4/6 Voted",
-    },
-    // ... add other meetings
-  ];
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const meetingsData = await Promise.all(
+          meetingIds.map((id) =>
+            axios.get(`${API_URL}meeting/${id}/getMeeting`, {
+              withCredentials: true,
+            })
+          )
+        );
+        setMeetings(meetingsData.map((response) => response.data));
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+        Alert.alert("Error", "Could not fetch meetings.");
+      }
+    };
+
+    fetchMeetings();
+  }, [meetingIds]); // Re-run when meetingIds changes
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.meetingsContainer}>
-          <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
-          {upcomingMeetings.map((meeting) => (
-            <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>{meeting.course}</Text>
-              <Text style={styles.descriptionText}>{meeting.description}</Text>
-              <Text style={styles.timeText}>
-                {meeting.date} {meeting.time}
-              </Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("RescheduleMeeting")}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>Reschedule</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.meetingsContainer}>
-          <Text style={styles.sectionTitle}>Pending Meetings</Text>
-          {pendingMeetings.map((meeting) => (
-            <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>{meeting.course}</Text>
-              <Text style={styles.descriptionText}>
-                {meeting.description} - {meeting.status}
-              </Text>
-              <Text style={styles.votesText}>{meeting.votes}</Text>
-            </View>
-          ))}
-        </View>
+        {meetings.map((meeting) => (
+          <View key={meeting.id} style={styles.meetingCard}>
+            <Text style={styles.courseText}>{meeting.meetingName}</Text>
+            <Text style={styles.descriptionText}>
+              Start: {meeting.meetingStartDateTime.toString()} - End:{" "}
+              {meeting.meetingEndDateTime.toString()}
+            </Text>
+            {/* Render other meeting details as needed */}
+          </View>
+        ))}
       </ScrollView>
       <TouchableOpacity
         onPress={() => {

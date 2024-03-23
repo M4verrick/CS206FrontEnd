@@ -11,7 +11,7 @@ import SignUpScreen from "./screens/SignUpScreen";
 import RescheduleMeetingScreen from "./screens/RescheduleMeetingScreen";
 import MeetingList from "./screens/MeetingList";
 import NotifTest from "./screens/NotifTest";
-import { UserProvider } from "./UserContext";
+import { MeetingIdProvider } from "./MeetingIdContext";
 import { UserIdProvider } from "./UserIdContext";
 
 const Stack = createStackNavigator();
@@ -19,7 +19,7 @@ const Stack = createStackNavigator();
 export default function App() {
   registerNNPushToken(20328, "yo2NfEZ8YjS8ZvKH1iQspw");
   return (
-    <UserProvider>
+    <MeetingIdProvider>
       <UserIdProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login">
@@ -73,6 +73,6 @@ export default function App() {
           </Stack.Navigator>
         </NavigationContainer>
       </UserIdProvider>
-    </UserProvider>
+    </MeetingIdProvider>
   );
 }
