@@ -14,6 +14,7 @@ const RescheduleMeetingScreen = ({ navigation }) => {
   const handleRescheduleConfirm = () => {
     // TODO: Implement the reschedule logic
     console.log("Reschedule confirmed");
+    navigation.navigate("MeetingList");
   };
 
   const handleRescheduleDecline = () => {

@@ -9,12 +9,13 @@ import {
   SafeAreaView,
 } from "react-native";
 import Service from "../service";
-import { useUserContext } from "./UserContext";
+import { useUserContext } from "../UserContext";
+import { useUserIdContext } from "../UserIdContext";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loginUser } = useUserContext();
+  const { addUserId } = useUserIdContext();
 
   const handleLoginPress = async () => {
     try {
@@ -22,9 +23,9 @@ const LoginScreen = ({ navigation }) => {
       if (isAuthenticated) {
         // If the login is successful, navigate to the TestScreen
         // register each individual user to be able to receive notifications
-        registerIndieID(email, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
+        registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw");
         console.log("Login Successful");
-        loginUser(email);
+        addUserId(user.id);
         navigation.navigate("Testpage");
       } else {
         // If the credentials are wrong, alert the user

@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useUserIdContext } from "../UserIdContext";
+import MeetingService from "../meeting.service";
 
 const MeetingList = ({ navigation }) => {
   // Dummy data for the meetings
