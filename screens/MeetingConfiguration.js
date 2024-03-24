@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, FlatList, View } from 'react-native';
 import Modal from 'react-native-modal';
+import axios from 'axios';
 
-// const teams = ["CS205", "CS202", "CS201"];
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const timeSlots = ['8-12', '12-16', '16-20', '20-24'];
 
@@ -10,55 +10,42 @@ const MeetingConfigurationScreen = () => {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [meetingName, setMeetingName] = useState('');
   const [selectedDuration, setSelectedDuration] = useState('');
-  const [selectedFrequency, setSelectedFrequency] = useState('');
+  const [selectedFrequency, setSelectedFrequency] = useState('Once');
   const [selectedDates, setSelectedDates] = useState([]);
   const [selectedTimings, setSelectedTimings] = useState([]);
   const [isTeamPickerModalVisible, setTeamPickerModalVisible] = useState(false);
   const [isDateModalVisible, setDateModalVisible] = useState(false);
   const [isTimeModalVisible, setTimeModalVisible] = useState(false);
+  const [teams, setTeams] = useState(["CS205", "CS202", "CS201"]); // Example team list
 
-  const [teams, setTeams] = useState([]); // State to hold the teams data
-
-  // GET getAllTeams
-  const fetchTeams = async () => {
-      try {
-        const response = await fetch(`${API_URL}/user/${userId}/getAllTeams`); // Adjust the API URL as needed
-        const data = await response.json();
-        setTeams(data); // Assuming the response is an array of team names
-      } catch (error) {
-        console.error('Error fetching teams:', error);
-      }
-    };
-  useEffect(() => {
-    fetchTeams();
-  }, []);
+  const getDurationInSeconds = (duration) => {
+    switch (duration) {
+      case '1 hour': return 3600;
+      case '2 hours': return 7200;
+      case '4 hours': return 14400;
+      case 'Custom': return parseInt(customDuration) * 3600; // Custom duration in hours to seconds
+      default: return 3600; // Default to 1 hour
+    }
+  };
 
   // POST createMeeting
   const handleCreateMeeting = async () => {
-    // console.log('Create Meeting with the following configuration', {
-    //   selectedTeam,
-    //   meetingName,
-    //   selectedDuration,
-    //   selectedFrequency,
-    //   selectedDates,
-    //   selectedTimings,
-    // });
+    const durationInSeconds = getDurationInSeconds(selectedDuration);
+    const firstDateTimeLimit = startDate.toISOString();
+    const lastDateTimeLimit = endDate.toISOString();
+
     try {
-      const response = await fetch(`${API_URL}/meeting/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/createMeeting`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(meetingConfig),
-      });
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log('Meeting successfully created:', data);
-        // Navigate to CommonTimeslots with the new meeting ID
-        navigation.navigate('CommonTimeslots', { meetingId: data.meetingId });
+      const response = await axios.post(
+        `${API_URL}/${selectedTeam}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/${selectedFrequency}/createMeeting`, 
+        {}, // Assuming no body is required as all data is in the URL
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      
+      if (response.status === 200 || response.status === 201) { // Check for successful response
+        console.log('Meeting successfully created:', response.data);
+        navigation.navigate('CommonTimeslots', { meetingId: response.data.meetingId });
       } else {
-        console.error('Failed to create meeting', data);
+        console.error('Failed to create meeting:', response.data);
       }
     } catch (error) {
       console.error('Error creating meeting:', error);
@@ -69,6 +56,7 @@ const MeetingConfigurationScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Meeting Configuration</Text>
 
+      {/* team picker */}
       <Text style={styles.label}>Team</Text>
       <TouchableOpacity
         style={styles.input}
@@ -91,6 +79,7 @@ const MeetingConfigurationScreen = () => {
         </View>
       </Modal>
 
+      {/* meeting name */}
       <Text style={styles.label}>Meeting Name</Text>
       <TextInput
         style={styles.input}
@@ -100,6 +89,7 @@ const MeetingConfigurationScreen = () => {
         placeholderTextColor="#999"
       />
 
+      {/* meeting duration */}
       <Text style={styles.label}>Duration of Meeting</Text>
       <View style={styles.buttonGroup}>
         {['1 hour', '2 hours', '4 hours', 'Custom'].map((duration) => (
@@ -116,6 +106,18 @@ const MeetingConfigurationScreen = () => {
         ))}
       </View>
 
+      {/* Custom Duration Input */}
+      {selectedDuration === 'Custom' && (
+        <TextInput
+          style={styles.input}
+          value={customDuration}
+          onChangeText={setCustomDuration}
+          placeholder="Enter duration in hours"
+          keyboardType="numeric"
+        />
+      )}
+
+      {/* meeting frequency */}
       <Text style={styles.label}>Frequency</Text>
       <View style={styles.buttonGroup}>
         {['Once', 'Weekly', 'Monthly', 'Custom'].map((frequency) => (
@@ -132,6 +134,7 @@ const MeetingConfigurationScreen = () => {
         ))}
       </View>
 
+      {/* dates */}
       <Text style={styles.label}>Preferred Set of Dates</Text>
       <TouchableOpacity
         style={styles.input}
@@ -156,6 +159,7 @@ const MeetingConfigurationScreen = () => {
         </View>
       </Modal>
 
+      {/* timings */}
       <Text style={styles.label}>Preferred Timings</Text>
       <TouchableOpacity
         style={styles.input}
@@ -180,6 +184,7 @@ const MeetingConfigurationScreen = () => {
         </View>
       </Modal>
 
+      {/* create meeting */}
       <TouchableOpacity
         style={styles.createButton}
         onPress={handleCreateMeeting}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Checkbox, Card, Button, DefaultTheme, PaperProvider } from 'react-native-paper';
+import axios from 'axios';
 
 const theme = {
     ...DefaultTheme,
@@ -15,49 +16,59 @@ const theme = {
 const CommonTimeslots = ({ meetingId, userId }) => {
     const [checkboxStates, setCheckboxStates] = useState([]);
     const [timeslots, setTimeslots] = useState([]);
-    const [hasUserVoted, setHasUserVoted] = useState(false); // New state to track user's vote
+    const [hasUserVoted, setHasUserVoted] = useState(false);
 
     // GET getMeeting
-    const fetchMeeting = async () => {
-        try {
-            const response = await fetch(`${API_URL}/meeting/${meetingId}/getMeeting`);
-            const data = await response.json();
-            console.log("Fetched Data:", data); // Debugging line to see fetched data structure
-            const fetchedTimeslots = data.meetingAvailabilities ? Object.keys(data.meetingAvailabilities) : [];
-            console.log("Fetched Timeslots:", fetchedTimeslots); // Debugging line to see fetched timeslots
-
-            // Updating states sequentially to ensure they are based on the correct data
-            setTimeslots(fetchedTimeslots);
-            setCheckboxStates(fetchedTimeslots.map(() => false)); // This ensures checkbox states are reset based on the fetched timeslots
-            setHasUserVoted(data.hasUserVoted[meetingId]); // Adjust this based on actual logic to determine if user has voted
-        } catch (error) {
-            console.error('Error fetching meeting details:', error);
-        }
-    };
     useEffect(() => {
+        const fetchMeeting = async () => {
+            try {
+                const meetingsData = await Promise.all(
+                    meetingIds.map(id =>
+                        axios.get(`${API_URL}/meeting/${id}/getMeeting`, {
+                            withCredentials: true,
+                        })
+                    )
+                );
+                const allTimeslots = meetingsData.flatMap(response => response.data.meetingAvailabilities ? Object.keys(response.data.meetingAvailabilities) : []);
+                // Assuming each meeting's data contains a `meetingAvailabilities` object with timeslots as keys
+                setTimeslots(allTimeslots);
+                setCheckboxStates(new Array(allTimeslots.length).fill(false));
+                // Assuming `hasUserVoted` is a boolean for simplicity, adjust based on your actual data structure
+                setHasUserVoted(meetingsData.some(response => response.data.hasUserVoted));
+            } catch (error) {
+                console.error("Error fetching meeting:", error);
+                Alert.alert("Error", "Could not fetch meeting.");
+            }
+        };
         fetchMeeting();
-    }, []);
+    }, [meetingIds]);
 
     // GET getCommonAvailabilities
-    const fetchCommonAvailabilities = async () => {
-        try {
-          const response = await fetch(`${API_URL}/meeting/${meetingId}/getCommonAvailabilities`);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          // Now you have your common availabilities in 'data', which you can then set in state
-          setTimeslots(data); // Assuming the data is directly the array/map of timeslots
-        } catch (error) {
-          console.error('Error fetching common availabilities:', error);
-        }
-      };
     useEffect(() => {
-        fetchCommonAvailabilities(); // Add this to fetch common availabilities on component mount
-        fetchMeeting();
-    }, []);
+        const fetchCommonAvailabilities = async () => {
+            try {
+                const commonData = await Promise.all(
+                    meetingIds.map(id =>
+                        axios.get(`${API_URL}/meeting/${id}/getCommonAvailabilities`, {
+                            withCredentials: true,
+                        })
+                    )
+                );
+                const commonTimeslots = commonData.flatMap(response => response.data.timeslots ? response.data.timeslots : []);
+                // Assuming the API returns a 'timeslots' array
+                setTimeslots(commonTimeslots);
+                setCheckboxStates(new Array(commonTimeslots.length).fill(false));
+            } catch (error) {
+                console.error("Error fetching common availabilities:", error);
+                Alert.alert("Error", "Could not fetch common availabilities.");
+            }
+        };
+        if (meetingIds.length > 0) {
+            fetchCommonAvailabilities();
+        }
+    }, [meetingIds]);
 
-    const handleCheckboxPress = async (index) => {
+      const handleCheckboxPress = async (index) => {
         const newCheckboxStates = [...checkboxStates];
         newCheckboxStates[index] = !newCheckboxStates[index];
         setCheckboxStates(newCheckboxStates);
@@ -65,28 +76,31 @@ const CommonTimeslots = ({ meetingId, userId }) => {
         const availabilityMap = timeslots.reduce((map, timeslot, idx) => {
             map[timeslot] = newCheckboxStates[idx];
             return map;
-          }, {});
+        }, {});
 
-        // PUT addVote
         try {
-            // Assuming you pass the availability map in the body, adjust as per your API
-            const response = await fetch(`${API_URL}/meeting/${meetingId}/${userId}/addVote`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ availabilityMap }),
-            });
-            if (response.ok) {
-                // Handle successful vote
+            const response = await axios.put(`${API_URL}/meeting/${meetingIds[0]}/${userId}/addVote`, // Assuming the first meeting ID for example
+                { availabilityMap },
+                { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+            );
+            if (response.status === 200) {
                 console.log('Vote successfully recorded');
-                setHasUserVoted(true); // Update the vote status
+                setHasUserVoted(true);
             } else {
                 console.error('Failed to record vote');
             }
         } catch (error) {
             console.error('Error submitting vote:', error);
         }
+    };
+
+    // Function to format date and time
+    const formatDateTime = (isoString) => {
+        const date = new Date(isoString);
+        return new Intl.DateTimeFormat('en-UK', {
+            dateStyle: 'full', 
+            timeStyle: 'short'
+        }).format(date);
     };
 
     return (
@@ -99,20 +113,20 @@ const CommonTimeslots = ({ meetingId, userId }) => {
             </Text>
 
             {timeslots.map((timeslot, index) => (
-                <Card key={timeslot} style={styles.card}>
-                    <View style={styles.row}>
-                        <View style={styles.dateTime}>
-                            <Text style={styles.dateTimeText}>{timeslot.replace('_', ' to ')}</Text>
+                    <Card key={timeslot} style={styles.card}>
+                        <View style={styles.row}>
+                            <View style={styles.dateTime}>
+                                {/* Display formatted date and time */}
+                                <Text style={styles.dateTimeText}>{formatDateTime(timeslot)}</Text>
+                            </View>
+                            <Checkbox
+                                status={checkboxStates[index] ? 'checked' : 'unchecked'}
+                                onPress={() => handleCheckboxPress(index)}
+                                disabled={hasUserVoted}
+                            />
                         </View>
-                        <Checkbox
-                            status={checkboxStates[index] ? 'checked' : 'unchecked'}
-                            onPress={() => handleCheckboxPress(index)}
-                            disabled={Object.values(hasUserVoted).some(vote => vote)} // Disable based on vote status
-                        />
-                    </View>
-                </Card>
-            ))}
-
+                    </Card>
+                ))}
             <Button mode="outlined" style={styles.button}>View my Calendar</Button>
 
             <Button mode="outlined" style={styles.button}>Continue</Button>
