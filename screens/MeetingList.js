@@ -16,11 +16,38 @@ const MeetingList = ({ navigation }) => {
   const { meetingIds } = useMeetingIdContext();
   // Function to calculate the vote count
   const calculateVotes = (hasUserVoted) => {
-    return Object.values(hasUserVoted).filter((voted) => voted).length;
+    return hasUserVoted
+      ? Object.values(hasUserVoted).filter((voted) => voted).length
+      : 0;
   };
   const voteCountText = (meeting) => {
     const votedCount = calculateVotes(meeting.hasUserVoted);
     return `${votedCount}/${meeting.userCount} Voted`;
+  };
+  const handleDeleteMeeting = (meetingId) => {
+    // Display a confirmation alert before deleting
+    Alert.alert(
+      "Delete Meeting",
+      "Are you sure you want to delete this meeting?",
+      [
+        // User pressed 'No' option, do nothing
+        {
+          text: "No",
+          onPress: () => console.log("Deletion cancelled."),
+          style: "cancel",
+        },
+        // User pressed 'Yes' option, delete meeting
+        {
+          text: "Yes",
+          onPress: () => {
+            MeetingService.deleteMeeting(meetingId);
+            console.log(`Meeting with id ${meetingId} deleted.`);
+            // After deletion logic, filter out the meeting from the list
+            setMeetings(meetings.filter((meeting) => meeting.id !== meetingId));
+          },
+        },
+      ]
+    );
   };
 
   // Simple date formatter function - you can replace it with a more robust solution
@@ -77,6 +104,13 @@ const MeetingList = ({ navigation }) => {
               >
                 <Text style={styles.buttonText}>Reschedule</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteMeeting(meeting.id)}
+              >
+                <Ionicons name="trash-outline" size={24} color="red" />
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
             </View>
           ))}
 
@@ -85,9 +119,14 @@ const MeetingList = ({ navigation }) => {
           .filter((m) => !m.isMeetingSet)
           .map((meeting) => (
             <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>{meeting.meetingName}</Text>
+              <Text style={styles.courseText}>
+                {meeting.meetingName || "No Name"}
+              </Text>
               {/* Use the voteCountText function to display the number of votes */}
-              <Text style={styles.votesText}>{voteCountText(meeting)}</Text>
+              <Text style={styles.votesText}>
+                {meeting.hasUserVoted ? voteCountText(meeting) : "No votes"}
+              </Text>
+              {/* Delete button logic remains the same */}
             </View>
           ))}
       </ScrollView>
@@ -162,6 +201,18 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+  },
+  deleteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffcccc",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    marginLeft: 5,
+    color: "red",
   },
 });
 
