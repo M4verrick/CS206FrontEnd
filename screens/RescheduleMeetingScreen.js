@@ -10,7 +10,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
 
-const RescheduleMeetingScreen = ({ navigation }) => {
+const RescheduleMeetingScreen = ({ route, navigation }) => {
+  // Extract the teamName from route.params
+  const { teamName } = route.params;
+
   const handleRescheduleConfirm = () => {
     // TODO: Implement the reschedule logic
     console.log("Reschedule confirmed");
@@ -26,7 +29,8 @@ const RescheduleMeetingScreen = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.card}>
         <Ionicons name="calendar" size={60} color="#4e5d78" />
-        <Text style={styles.title}>Reschedule CS 301?</Text>
+        {/* Use the teamName passed from the MeetingList component */}
+        <Text style={styles.title}>Reschedule {teamName}?</Text>
         <Text style={styles.warning}>
           WARNING: This action cannot be undone.
         </Text>

@@ -21,6 +21,10 @@ const TestPage = ({ navigation }) => {
         onPress={() => navigation.navigate("NotifTest")}
       />
       <Button
+        title="Go to Calendar"
+        onPress={() => navigation.navigate("ScheduleScreen")}
+      />
+      <Button
         title="Go to Reschedule Meeting"
         onPress={() => navigation.navigate("RescheduleMeeting")}
       />

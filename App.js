@@ -13,6 +13,7 @@ import MeetingList from "./screens/MeetingList";
 import NotifTest from "./screens/NotifTest";
 import { MeetingIdProvider } from "./MeetingIdContext";
 import { UserIdProvider } from "./UserIdContext";
+import ScheduleScreen from "./screens/ScheduleScreen";
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,11 @@ export default function App() {
               name="RescheduleMeeting"
               component={RescheduleMeetingScreen}
               options={{ headerShown: true, title: "RescheduleMeeting" }}
+            />
+            <Stack.Screen
+              name="ScheduleScreen"
+              component={ScheduleScreen}
+              options={{ headerShown: true, title: "Calendar" }}
             />
             <Stack.Screen
               name="NotifTest"

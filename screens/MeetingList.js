@@ -12,9 +12,28 @@ import { useMeetingIdContext } from "../MeetingIdContext"; // Ensure the correct
 import MeetingService from "../meetingService"; // Import your getMeeting function
 
 const MeetingList = ({ navigation }) => {
-  const [upcomingMeetings, setUpcomingMeetings] = useState([]);
-  const [pendingMeetings, setPendingMeetings] = useState([]);
+  const [meetings, setMeetings] = useState([]);
   const { meetingIds } = useMeetingIdContext();
+  // Function to calculate the vote count
+  const calculateVotes = (hasUserVoted) => {
+    return Object.values(hasUserVoted).filter((voted) => voted).length;
+  };
+  const voteCountText = (meeting) => {
+    const votedCount = calculateVotes(meeting.hasUserVoted);
+    return `${votedCount}/${meeting.userCount} Voted`;
+  };
+
+  // Simple date formatter function - you can replace it with a more robust solution
+  const formatDate = (dateString) => {
+    const options = {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -28,12 +47,8 @@ const MeetingList = ({ navigation }) => {
           // Optionally handle the error e.g., by setting an error state or showing an alert
         }
       }
-
-      // Categorize meetings into upcoming and pending
-      const upcoming = fetchedMeetings.filter((m) => m.isMeetingSet);
-      const pending = fetchedMeetings.filter((m) => !m.isMeetingSet);
-      setUpcomingMeetings(upcoming);
-      setPendingMeetings(pending);
+      // Assuming that all meetings are either upcoming or pending, categorize accordingly
+      setMeetings(fetchedMeetings);
     };
 
     fetchMeetings();
@@ -42,33 +57,39 @@ const MeetingList = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.meetingsContainer}>
-          <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
-          {upcomingMeetings.map((meeting) => (
+        <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
+        {meetings
+          .filter((m) => m.isMeetingSet)
+          .map((meeting) => (
             <View key={meeting.id} style={styles.meetingCard}>
               <Text style={styles.courseText}>{meeting.meetingName}</Text>
-              {/* Format the dates as needed */}
-              <Text style={styles.descriptionText}>{meeting.description}</Text>
-              {/* Add appropriate fields based on your actual meeting object */}
+              <Text style={styles.descriptionText}>
+                {formatDate(meeting.meetingStartDateTime)} -{" "}
+                {formatDate(meeting.meetingEndDateTime)}
+              </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("RescheduleMeeting")}
+                onPress={() =>
+                  navigation.navigate("RescheduleMeeting", {
+                    teamName: meeting.meetingName,
+                  })
+                }
                 style={styles.button}
               >
                 <Text style={styles.buttonText}>Reschedule</Text>
               </TouchableOpacity>
             </View>
           ))}
-        </View>
 
-        <View style={styles.meetingsContainer}>
-          <Text style={styles.sectionTitle}>Pending Meetings</Text>
-          {pendingMeetings.map((meeting) => (
+        <Text style={styles.sectionTitle}>Pending Meetings</Text>
+        {meetings
+          .filter((m) => !m.isMeetingSet)
+          .map((meeting) => (
             <View key={meeting.id} style={styles.meetingCard}>
               <Text style={styles.courseText}>{meeting.meetingName}</Text>
-              {/* Add appropriate fields based on your actual meeting object */}
+              {/* Use the voteCountText function to display the number of votes */}
+              <Text style={styles.votesText}>{voteCountText(meeting)}</Text>
             </View>
           ))}
-        </View>
       </ScrollView>
       <TouchableOpacity
         onPress={() => {
