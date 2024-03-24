@@ -13,7 +13,7 @@ const theme = {
     },
 };
 
-const CommonTimeslots = ({ meetingId, userId }) => {
+const CommonTimeslots = ({ meetingIds, userId }) => {
     const [checkboxStates, setCheckboxStates] = useState([]);
     const [timeslots, setTimeslots] = useState([]);
     const [hasUserVoted, setHasUserVoted] = useState(false);

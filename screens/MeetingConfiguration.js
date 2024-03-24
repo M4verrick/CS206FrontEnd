@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, FlatList, View } from 'react-native';
 import Modal from 'react-native-modal';
 import axios from 'axios';
+// import Service from '../service'
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const timeSlots = ['8-12', '12-16', '16-20', '20-24'];
@@ -17,6 +18,18 @@ const MeetingConfigurationScreen = () => {
   const [isDateModalVisible, setDateModalVisible] = useState(false);
   const [isTimeModalVisible, setTimeModalVisible] = useState(false);
   const [teams, setTeams] = useState(["CS205", "CS202", "CS201"]); // Example team list
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const API_URL = "http://10.124.10.120:8080/api/v1/"
+
+  const handleSelectStartDate = (date) => {
+    setStartDate(date);
+  };
+  
+  const handleSelectEndDate = (date) => {
+    setEndDate(date);
+  };
 
   const getDurationInSeconds = (duration) => {
     switch (duration) {
@@ -29,28 +42,77 @@ const MeetingConfigurationScreen = () => {
   };
 
   // POST createMeeting
-  const handleCreateMeeting = async () => {
-    const durationInSeconds = getDurationInSeconds(selectedDuration);
-    const firstDateTimeLimit = startDate.toISOString();
-    const lastDateTimeLimit = endDate.toISOString();
+const handleCreateMeeting = async () => {
+  const durationInSeconds = getDurationInSeconds(selectedDuration);
+  const firstDateTimeLimit = startDate ? startDate.toISOString() : null;
+  const lastDateTimeLimit = endDate ? endDate.toISOString() : null;
 
-    try {
-      const response = await axios.post(
-        `${API_URL}/${selectedTeam}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/${selectedFrequency}/createMeeting`, 
-        {}, // Assuming no body is required as all data is in the URL
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      
-      if (response.status === 200 || response.status === 201) { // Check for successful response
-        console.log('Meeting successfully created:', response.data);
-        navigation.navigate('CommonTimeslots', { meetingId: response.data.meetingId });
-      } else {
-        console.error('Failed to create meeting:', response.data);
-      }
-    } catch (error) {
-      console.error('Error creating meeting:', error);
+  try {
+    const response = await axios.post(
+      `${API_URL}/${selectedTeam}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/${selectedFrequency}/createMeeting`, 
+      {}, 
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    if (response.status === 200 || response.status === 201) {
+      console.log('Meeting successfully created:', response.data);
+      navigation.navigate('CommonTimeslots', { meetingId: response.data.meetingId });
+    } else {
+      console.error('Failed to create meeting:', response.data);
     }
+  } catch (error) {
+    console.error('Error creating meeting:', error);
+  }
+};
+
+  const renderTeamItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.teamItem}
+      onPress={() => {
+        setSelectedTeam(item);
+        setTeamPickerModalVisible(false);
+      }}>
+      <Text style={styles.teamItemText}>{item}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectDate = (day) => {
+    setSelectedDates((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day);
+      } else {
+        return [...prev, day];
+      }
+    });
   };
+
+  const renderDateItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectDate(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedDates.includes(item) ? '✓' : ''}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSelectTime = (time) => {
+    setSelectedTimings((prev) => {
+      if (prev.includes(time)) {
+        return prev.filter((t) => t !== time);
+      } else {
+        return [...prev, time];
+      }
+    });
+  };
+
+  const renderTimeItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.checkboxContainer}
+      onPress={() => handleSelectTime(item)}>
+      <Text style={styles.checkboxLabel}>{item}</Text>
+      <Text style={styles.checkbox}>{selectedTimings.includes(item) ? '✓' : ''}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -193,58 +255,7 @@ const MeetingConfigurationScreen = () => {
       </TouchableOpacity>
     </ScrollView>
   );
-};
-
-  const renderTeamItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.teamItem}
-      onPress={() => {
-        setSelectedTeam(item);
-        setTeamPickerModalVisible(false);
-      }}>
-      <Text style={styles.teamItemText}>{item}</Text>
-    </TouchableOpacity>
-  );
-
-  const handleSelectDate = (day) => {
-    setSelectedDates((prev) => {
-      if (prev.includes(day)) {
-        return prev.filter((d) => d !== day);
-      } else {
-        return [...prev, day];
-      }
-    });
-  };
-
-  const renderDateItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => handleSelectDate(item)}>
-      <Text style={styles.checkboxLabel}>{item}</Text>
-      <Text style={styles.checkbox}>{selectedDates.includes(item) ? '✓' : ''}</Text>
-    </TouchableOpacity>
-  );
-
-  const handleSelectTime = (time) => {
-    setSelectedTimings((prev) => {
-      if (prev.includes(time)) {
-        return prev.filter((t) => t !== time);
-      } else {
-        return [...prev, time];
-      }
-    });
-  };
-
-  const renderTimeItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => handleSelectTime(item)}>
-      <Text style={styles.checkboxLabel}>{item}</Text>
-      <Text style={styles.checkbox}>{selectedTimings.includes(item) ? '✓' : ''}</Text>
-    </TouchableOpacity>
-  );
-
-  
+};  
 
 const styles = StyleSheet.create({
   modal: {
