@@ -7,34 +7,22 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
-  Alert,
 } from "react-native";
 import Service from "../service";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import { useUserIdContext } from "../UserIdContext";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
-import * as SecureStore from 'expo-secure-store';
-
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { addMeetingIds } = useMeetingIdContext();
   const { addUserId } = useUserIdContext();
 
-  const storeUserId = async (userId) => {
-    try {
-      await SecureStore.setItemAsync('userId', userId);
-    } catch (error) {
-      console.error('Error storing the user id', error);
-    }
-  };
-
   const handleLoginPress = async () => {
     try {
       const user = await Service.login(email, password);
       if (user) {
         console.log("Login Successful", user);
-        await storeUserId(user.id); // Securely store the user ID
         addUserId(user.id); // Add the user ID to your context or state management
         registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw"); // Register for notifications
         addMeetingIds([...user.userMeetingIds]);
@@ -89,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.loginButton}
-        onPress={handleLoginPress}
+        onPress={() => handleLoginPress(email, password)}
       >
         <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
@@ -98,7 +86,8 @@ const LoginScreen = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignUpPress}>
         <Text style={styles.signUp}>
-          Don’t have an account? Sign up <Text style={styles.signUpHere}>HERE</Text>
+          Don’t have an account? Sign up{" "}
+          <Text style={styles.signUpHere}>HERE</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
