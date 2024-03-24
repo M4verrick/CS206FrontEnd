@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://172.20.10.3:8080/api/v1/";
+const API_URL = "http://10.87.13.193:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -156,6 +156,23 @@ const connectGoogleCalendar = (userId) => {
     });
 };
 
+// Fetch all teams and their associated meetings for a specific user
+const getAllTeamsAndMeetings = async (userId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}user/${userId}/getAllTeamAndMeetings`,
+      {
+        timeout: 5000, // Optional: Set a timeout for the request
+      }
+    );
+    return response.data; // The data here should be the map of teams to sets of meetings
+  } catch (error) {
+    console.error("Error fetching teams and meetings:", error);
+    throw error;
+  }
+};
+
+
 const Service = {
   createTeam,
   addUserToTeam,
@@ -165,6 +182,7 @@ const Service = {
   connectGoogleCalendar,
   signUp,
   login,
+  getAllTeamsAndMeetings,
 };
 
 export default Service;
