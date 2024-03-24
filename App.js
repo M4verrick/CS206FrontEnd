@@ -16,6 +16,7 @@ import { UserIdProvider } from "./UserIdContext";
 import ScheduleScreen from "./screens/ScheduleScreen";
 import MeetingProgressScreen from "./screens/MeetingProgressScreen";
 import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
+import HomePage from "./screens/HomePage";
 
 const Stack = createStackNavigator();
 
@@ -85,6 +86,12 @@ export default function App() {
               name="MeetingList"
               component={MeetingList}
               options={{ headerShown: true, title: "Meetings" }}
+            />
+
+            <Stack.Screen
+              name="HomePage"
+              component={HomePage}
+              options={{ headerShown: true, title: "HomePage" }}
             />
 
             {/* ...other screens if any */}
