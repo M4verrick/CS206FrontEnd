@@ -14,6 +14,8 @@ import NotifTest from "./screens/NotifTest";
 import { MeetingIdProvider } from "./MeetingIdContext";
 import { UserIdProvider } from "./UserIdContext";
 import ScheduleScreen from "./screens/ScheduleScreen";
+import MeetingProgressScreen from "./screens/MeetingProgressScreen";
+import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
 
 const Stack = createStackNavigator();
 
@@ -55,9 +57,19 @@ export default function App() {
               options={{ headerShown: true, title: "CommonTimeslots" }}
             />
             <Stack.Screen
+              name="MeetingProgressScreen"
+              component={MeetingProgressScreen}
+              options={{ headerShown: true, title: "Meeting Progress" }}
+            />
+            <Stack.Screen
               name="RescheduleMeeting"
               component={RescheduleMeetingScreen}
               options={{ headerShown: true, title: "RescheduleMeeting" }}
+            />
+            <Stack.Screen
+              name="MeetingSuccessScreen"
+              component={MeetingSuccessScreen}
+              options={{ headerShown: true, title: "Successful!" }}
             />
             <Stack.Screen
               name="ScheduleScreen"
