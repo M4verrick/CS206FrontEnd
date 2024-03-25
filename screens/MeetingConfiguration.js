@@ -10,19 +10,9 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import MeetingService from "../meetingService";
-import { useUserIdContext } from "../UserIdContext";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Service from "../service";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
-
-const days = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
 const generateTimeSlots = (startHour, endHour) => {
   const slots = [];
   for (let hour = startHour; hour < endHour; hour++) {
@@ -45,18 +35,24 @@ const MeetingConfigurationScreen = () => {
   const [isDateModalVisible, setDateModalVisible] = useState(false);
   const [isTimeModalVisible, setTimeModalVisible] = useState(false);
   const [teams, setTeamNames] = useState([]);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const timeSlots = ["8-12", "12-16", "16-20", "20-24"];
-  // const [timeSlots, setTimeSlots] = useState(generateTimeSlots(8, 24)); // 24-hour format for 12 AM
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState({
+    start: false,
+    end: false,
+  });
+  const [timeSlots] = useState(generateTimeSlots(8, 24)); // 24-hour format for 12 AM
   const { userTeamIds } = useUserTeamIdContext();
-
-  const handleSelectStartDate = (date) => {
-    setStartDate(date);
+  const onStartDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || startDate;
+    setShowDatePicker({ ...showDatePicker, start: false });
+    setStartDate(currentDate);
   };
 
-  const handleSelectEndDate = (date) => {
-    setEndDate(date);
+  const onEndDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || endDate;
+    setShowDatePicker({ ...showDatePicker, end: false });
+    setEndDate(currentDate);
   };
 
   const getDurationInSeconds = (duration) => {
@@ -73,30 +69,6 @@ const MeetingConfigurationScreen = () => {
         return 3600; // Default to 1 hour
     }
   };
-  // useEffect(() => {
-  //   const fetchTeamNames = async () => {
-  //     try {
-  //       // Map userTeamIds to promises to fetch each team name
-  //       const teamNamesPromises = userTeamIds.map(async (teamId) => {
-  //         const teamInfo = await Service.getTeamById(teamId);
-  //         return teamInfo.teamName; // Assuming the response has a teamName field
-  //       });
-
-  //       // Resolve all promises to get the team names
-  //       const resolvedTeamNames = await Promise.all(teamNamesPromises);
-
-  //       // Update the state with the fetched team names
-  //       setTeamNames(resolvedTeamNames);
-  //     } catch (error) {
-  //       console.error("Failed to fetch team names", error);
-  //       // Handle the error appropriately
-  //     }
-  //   };
-
-  //   if (userTeamIds.length > 0) {
-  //     fetchTeamNames();
-  //   }
-  // }, [userTeamIds]);
   useEffect(() => {
     const fetchTeamNames = async () => {
       try {
@@ -124,11 +96,19 @@ const MeetingConfigurationScreen = () => {
   // createMeeting
   const handleCreateMeeting = async () => {
     const durationInSeconds = getDurationInSeconds(selectedDuration);
-    const firstDateTimeLimit = startDate ? startDate.toISOString() : null;
-    const lastDateTimeLimit = endDate ? endDate.toISOString() : null;
     const teamId = selectedTeamId;
-    console.log(teamId);
-    const frequency = selectedFrequency; // Directly use the state variable
+    const frequency = selectedFrequency;
+    const startTime =
+      selectedTimings.length > 0 ? selectedTimings[0].split(" - ")[0] : "00:00";
+    const endTime =
+      selectedTimings.length > 0 ? selectedTimings[0].split(" - ")[1] : "00:00";
+    const firstDateTimeLimit = startDate
+      ? `${startDate.toISOString().split("T")[0]}T${startTime}:00`
+      : null;
+    const lastDateTimeLimit = endDate
+      ? `${endDate.toISOString().split("T")[0]}T${endTime}:00`
+      : null;
+
     try {
       const response = MeetingService.createMeeting(
         teamId,
@@ -138,9 +118,9 @@ const MeetingConfigurationScreen = () => {
         durationInSeconds,
         frequency
       );
-      if (response.status === 200 || response.status === 201) {
+      if (response) {
         console.log("Meeting successfully created:", response.data);
-        navigation.navigate("CommonTimeslots", {
+        navigation.navigate("CommonTimeSlots", {
           meetingId: response.data.meetingId,
         });
       } else {
@@ -151,17 +131,6 @@ const MeetingConfigurationScreen = () => {
     }
   };
 
-  // const renderTeamItem = ({ item }) => (
-  //   <TouchableOpacity
-  //     style={styles.teamItem}
-  //     onPress={() => {
-  //       setSelectedTeam(item);
-  //       setTeamPickerModalVisible(false);
-  //     }}
-  //   >
-  //     <Text style={styles.teamItemText}>{item}</Text>
-  //   </TouchableOpacity>
-  // );
   const renderTeamItem = ({ item }) => (
     <TouchableOpacity
       style={styles.teamItem}
@@ -184,18 +153,6 @@ const MeetingConfigurationScreen = () => {
       }
     });
   };
-
-  const renderDateItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => handleSelectDate(item)}
-    >
-      <Text style={styles.checkboxLabel}>{item}</Text>
-      <Text style={styles.checkbox}>
-        {selectedDates.includes(item) ? "✓" : ""}
-      </Text>
-    </TouchableOpacity>
-  );
 
   const handleSelectTime = (time) => {
     setSelectedTimings((prev) => {
@@ -300,31 +257,38 @@ const MeetingConfigurationScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* dates */}
       <Text style={styles.label}>Preferred Set of Dates</Text>
+      {/* Start Date Picker */}
       <TouchableOpacity
-        style={styles.input}
-        onPress={() => setDateModalVisible(true)}
+        style={styles.button}
+        onPress={() => setShowDatePicker({ ...showDatePicker, start: true })}
       >
-        <Text style={styles.inputText}>
-          {selectedDates.length > 0 ? selectedDates.join(", ") : "Select Dates"}
-        </Text>
+        <Text>Select Start Date</Text>
       </TouchableOpacity>
+      {showDatePicker.start && (
+        <DateTimePicker
+          value={startDate || new Date()}
+          mode={"date"}
+          display="default"
+          onChange={onStartDateChange}
+        />
+      )}
 
-      <Modal
-        isVisible={isDateModalVisible}
-        onBackdropPress={() => setDateModalVisible(false)}
-        style={styles.modal}
+      {/* End Date Picker */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setShowDatePicker({ ...showDatePicker, end: true })}
       >
-        <View style={styles.modalContent}>
-          <FlatList
-            data={days}
-            renderItem={renderDateItem}
-            keyExtractor={(item) => item}
-          />
-        </View>
-      </Modal>
+        <Text>Select End Date</Text>
+      </TouchableOpacity>
+      {showDatePicker.end && (
+        <DateTimePicker
+          value={endDate || new Date()}
+          mode={"date"}
+          display="default"
+          onChange={onEndDateChange}
+        />
+      )}
 
       {/* timings */}
       <Text style={styles.label}>Preferred Timings</Text>

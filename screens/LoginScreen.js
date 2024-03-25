@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
         registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw"); // Register for notifications
         addMeetingIds([...user.userMeetingIds]);
         addUserTeamId([...user.teamIds]);
-        navigation.navigate("HomePage"); // Navigate to the next screen
+        navigation.navigate("Testpage"); // Navigate to the next screen
       } else {
         // If the user entity is not returned, treat it as a failed login
         Alert.alert(

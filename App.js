@@ -18,6 +18,7 @@ import MeetingProgressScreen from "./screens/MeetingProgressScreen";
 import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
 import HomePage from "./screens/HomePage";
 import { UserTeamIdProvider } from "./UserTeamIdContext";
+import MeetingConfigurationScreen2 from "./screens/MeetingConfiguration2";
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,11 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
+                name="MeetingConfig2"
+                component={MeetingConfigurationScreen2}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name="MeetingConfiguration"
                 component={MeetingConfigurationScreen}
                 options={{ headerShown: true, title: "Meeting Configuration" }}
@@ -57,7 +63,7 @@ export default function App() {
               <Stack.Screen
                 name="CommonTimeslots"
                 component={CommonTimeslots}
-                options={{ headerShown: true, title: "CommonTimeslots" }}
+                options={{ headerShown: true, title: "CommonTimeSlots" }}
               />
               <Stack.Screen
                 name="MeetingProgressScreen"
