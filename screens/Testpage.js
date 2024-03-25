@@ -14,7 +14,7 @@ const TestPage = ({ navigation }) => {
       />
       <Button
         title="Go to Common Timeslots"
-        onPress={() => navigation.navigate("CommonTimeslots")}
+        onPress={() => navigation.navigate("CommonSlots")}
       />
       <Button
         title="Go to Meeting Progress"
