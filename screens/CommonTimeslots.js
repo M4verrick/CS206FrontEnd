@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { Checkbox, Card, Button, DefaultTheme, PaperProvider } from 'react-native-paper';
 import axios from 'axios';
+import { UserIdProvider } from "./UserIdContext";
+import { useUserIdContext } from '../UserIdContext';
 
 const theme = {
     ...DefaultTheme,
@@ -13,7 +15,8 @@ const theme = {
     },
 };
 
-const CommonTimeslots = ({ meetingIds, userId }) => {
+const CommonTimeslots = ({ meetingId }) => {
+    const {userInfo} = useUserIdContext();
     const [checkboxStates, setCheckboxStates] = useState([]);
     const [timeslots, setTimeslots] = useState([]);
     const [hasUserVoted, setHasUserVoted] = useState(false);
