@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://10.124.10.120:8080/api/v1/";
+const API_URL = "http://192.168.1.112:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -20,6 +20,16 @@ const signUp = async (userName, userEmail, userPassword) => {
     console.log("Signup successful:", data);
   } catch (error) {
     console.error("Error during signup:", error);
+    throw error;
+  }
+};
+
+const getUserById = async (userId) => {
+  try {
+    const response = await axios.get(`${API_URL}/user/${userId}/getUser`);
+    return response.data; // This will be the user object
+  } catch (error) {
+    console.error('Error fetching user:', error);
     throw error;
   }
 };

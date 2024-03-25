@@ -8,12 +8,13 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useMeetingIdContext } from "../MeetingIdContext"; // Ensure the correct path is used
-import MeetingService from "../meetingService"; // Import your getMeeting function
+import { useMeetingIdContext } from "../MeetingIdContext";
+import MeetingService from "../meetingService";
 
 const HomePage = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
   const { meetingIds } = useMeetingIdContext();
+
   // Function to calculate the vote count
   const calculateVotes = (hasUserVoted) => {
     return hasUserVoted
@@ -116,12 +117,10 @@ const HomePage = ({ navigation }) => {
 
         <Text style={styles.sectionTitle}>Pending Meetings</Text>
         {meetings
-          .filter((m) => !m.isMeetingSet)
+          .filter((m) => !m.isMeetingSet && m.meetingName)
           .map((meeting) => (
             <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>
-                {meeting.meetingName || "No Name"}
-              </Text>
+              <Text style={styles.courseText}>{meeting.meetingName}</Text>
               {/* Use the voteCountText function to display the number of votes */}
               <Text style={styles.votesText}>
                 {meeting.hasUserVoted ? voteCountText(meeting) : "No votes"}
@@ -136,7 +135,7 @@ const HomePage = ({ navigation }) => {
         }}
         style={styles.floatingButton}
       >
-        <Ionicons name="add" size={24} color="white" />
+        <Ionicons name="calendar" size={24} color="white" />
       </TouchableOpacity>
 
       {/* New floating button on the bottom left */}
@@ -146,7 +145,7 @@ const HomePage = ({ navigation }) => {
         }}
         style={styles.leftFloatingButton}
       >
-        <Ionicons name="add" size={24} color="white" />
+        <Ionicons name="people" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -159,6 +158,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     marginHorizontal: 20,
+    marginBottom: 100,
   },
   meetingsContainer: {
     marginTop: 20,
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
   },
   leftFloatingButton: {
     backgroundColor: "black",
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
   },
   deleteButton: {
     flexDirection: "row",

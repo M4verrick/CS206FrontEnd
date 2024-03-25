@@ -12,11 +12,13 @@ import Service from "../service";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import { useUserIdContext } from "../UserIdContext";
 import { registerIndieID, unregisterIndieDevice } from "native-notify";
+import { useUserTeamIdContext } from "../UserTeamIdContext";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { addMeetingIds } = useMeetingIdContext();
   const { addUserId } = useUserIdContext();
+  const { addUserTeamId } = useUserTeamIdContext();
 
   const handleLoginPress = async () => {
     try {
@@ -26,7 +28,8 @@ const LoginScreen = ({ navigation }) => {
         addUserId(user.id); // Add the user ID to your context or state management
         registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw"); // Register for notifications
         addMeetingIds([...user.userMeetingIds]);
-        navigation.navigate("Testpage"); // Navigate to the next screen
+        addUserTeamId([...user.teamIds]);
+        navigation.navigate("HomePage"); // Navigate to the next screen
       } else {
         // If the user entity is not returned, treat it as a failed login
         Alert.alert(

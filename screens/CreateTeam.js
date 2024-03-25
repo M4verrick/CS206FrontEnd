@@ -1,42 +1,65 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, SafeAreaView, FlatList, Alert } from 'react-native';
-import Service from '../service'; // Make sure this path is correct
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  FlatList,
+  Alert,
+} from "react-native";
+import Service from "../service";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const NewTeamScreen = () => {
-  const [teamName, setTeamName] = useState('');
-  const [email, setEmail] = useState('');
+  const [teamName, setTeamName] = useState("");
+  const [email, setEmail] = useState("");
   const [teamEmails, setTeamEmails] = useState([]);
 
   const handleAddEmail = () => {
     if (email && !teamEmails.includes(email)) {
-      setTeamEmails(prevEmails => [...prevEmails, email]);
-      setEmail(''); // Reset the email input after adding
+      setTeamEmails((prevEmails) => [...prevEmails, email]);
+      setEmail(""); // Reset the email input after adding
     } else {
-      Alert.alert('Duplicate or Empty Email', 'Each email must be unique and non-empty.');
+      Alert.alert(
+        "Duplicate or Empty Email",
+        "Each email must be unique and non-empty."
+      );
     }
   };
 
   const handleDeleteEmail = (emailToDelete) => {
-    setTeamEmails(prevEmails => prevEmails.filter(email => email !== emailToDelete));
+    setTeamEmails((prevEmails) =>
+      prevEmails.filter((email) => email !== emailToDelete)
+    );
   };
-  
+
   const handleCreateTeam = async () => {
     try {
       const response = await Service.createTeam(teamName, teamEmails);
       // Handle the response as needed, perhaps navigating to a new screen or showing a success message
-      Alert.alert('Team Created', `Team ${teamName} has been successfully created.`);
+      Alert.alert(
+        "Team Created",
+        `Team ${teamName} has been successfully created.`
+      );
     } catch (error) {
       // Handle any errors that occur during the API call
-      Alert.alert('Error', 'There was a problem creating the team. Please try again.');
+      Alert.alert(
+        "Error",
+        "There was a problem creating the team. Please try again."
+      );
       console.error(error);
     }
   };
 
-
   const renderEmailItem = ({ item }) => (
     <View style={styles.emailListItem}>
       <Text style={styles.emailText}>{item}</Text>
-      <TouchableOpacity onPress={() => handleDeleteEmail(item)} style={styles.deleteButton}>
+      <TouchableOpacity
+        onPress={() => handleDeleteEmail(item)}
+        style={styles.deleteButton}
+      >
         <Text style={styles.deleteButtonText}>X</Text>
       </TouchableOpacity>
     </View>
@@ -64,7 +87,7 @@ const NewTeamScreen = () => {
           keyboardType="email-address"
         />
         <TouchableOpacity style={styles.addButton} onPress={handleAddEmail}>
-          <Text style={styles.addButtonText}>+</Text>
+          <MaterialIcons name="person-add" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -75,7 +98,7 @@ const NewTeamScreen = () => {
         style={styles.emailList}
       />
 
-<TouchableOpacity style={styles.button} onPress={handleCreateTeam}>
+      <TouchableOpacity style={styles.button} onPress={handleCreateTeam}>
         <Text style={styles.buttonText}>Create Team</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -85,37 +108,37 @@ const NewTeamScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   header: {
     marginBottom: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 50,
-    color: 'black',
+    color: "black",
   },
   label: {
-    alignSelf: 'flex-start',
-    marginLeft: '10%', // Adjusted for consistency with the margin from the SignUpScreen
-    color: 'black',
-    fontWeight: 'bold',
+    alignSelf: "flex-start",
+    marginLeft: "10%", // Adjusted for consistency with the margin from the SignUpScreen
+    color: "black",
+    fontWeight: "bold",
     marginBottom: 5,
   },
   input: {
     height: 50,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
     marginVertical: 10,
-    width: '80%', // Assuming the SignUpScreen has inputs of 80% width
+    width: "80%", // Assuming the SignUpScreen has inputs of 80% width
   },
   emailInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '80%', // Match the width with the SignUpScreen inputs
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "80%", // Match the width with the SignUpScreen inputs
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   emailInput: {
@@ -123,59 +146,58 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     marginRight: 10,
-    borderColor: 'black',
+    borderColor: "black",
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
     marginVertical: 10,
   },
   addButton: {
-    // Adjusted to resemble the loginButton style
-    backgroundColor: 'black',
-    padding: 15,
+    backgroundColor: "black",
+    padding: 10,
     borderRadius: 25,
     width: 50,
     height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   addButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
   },
   emailList: {
     marginTop: 20,
-    width: '80%', // Match the width with the SignUpScreen inputs
+    width: "80%",
   },
   emailListItem: {
-    flexDirection: 'row',
-    backgroundColor: '#e1e1e1',
+    flexDirection: "row",
+    backgroundColor: "#e1e1e1",
     borderRadius: 25,
     padding: 15,
     marginTop: 5,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   emailText: {
-    color: 'black',
+    color: "black",
     flex: 1,
   },
   deleteButton: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 25,
     width: 30,
     height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   deleteButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
     // Adapted from the loginButton style
-    backgroundColor: 'black',
+    backgroundColor: "black",
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 25,
@@ -183,7 +205,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     // Adapted from the loginButtonText style
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
 });
