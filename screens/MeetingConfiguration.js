@@ -111,7 +111,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
       );
       if (response) {
         Alert.alert("Meeting successfully created!");
-        navigation.navigate("CommonTimeSlots", {
+        navigation.navigate("CommonSlots", {
           meetingId: response.id,
         });
       } else {
