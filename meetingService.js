@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://172.20.10.3:8080/api/v1/";
+const API_URL = "http://10.124.144.51:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // @GetMapping("/getAllMeetings")
@@ -20,24 +20,21 @@ const getAllMeetings = () => {
 
 // @PostMapping("/{firstMeeting}/{lastMeeting}/createNewMeeting")
 // public ResponseEntity<Meeting> createNewMeeting
-const createNewMeeting = (firstMeeting, lastMeeting) => {
-  return axios
-    .post(
+const createNewMeeting = async (firstMeeting, lastMeeting) => {
+  try {
+    const response = await axios.post(
       API_URL + `meeting/${firstMeeting}/${lastMeeting}/createNewMeeting`,
       {
         firstMeeting,
         lastMeeting,
       },
       { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
+    );
+    return response;
+  } catch (error) {
+    console.error("Error fetching information:", error);
+    throw error;
+  }
 };
 
 // @GetMapping("{meetingId}/getMeeting")
@@ -66,7 +63,7 @@ const getMeeting = (meetingId) => {
 //                                        @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
 //                                        @PathVariable(value = "frequency") String frequency,
 //                                        @PathVariable(value = "durationInSeconds") long durationInSeconds)
-const createMeeting = (
+const createMeeting = async (
   teamId,
   meetingName,
   firstDateTimeLimit,
@@ -74,8 +71,8 @@ const createMeeting = (
   durationInSeconds,
   frequency
 ) => {
-  return axios
-    .post(
+  try {
+    const response = await axios.post(
       API_URL +
         `meeting/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/${frequency}/createMeeting`,
       {
@@ -87,15 +84,13 @@ const createMeeting = (
         frequency,
       },
       { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
+    );
+    const inSet = response.data;
+    return inSet;
+  } catch (error) {
+    console.error("Error fetching information:", error);
+    throw error;
+  }
 };
 
 // @GetMapping("/{meetingId}/getCommonAvailabilities")

@@ -61,7 +61,7 @@ export default function App() {
                 options={{ headerShown: true, title: "Testpage" }}
               />
               <Stack.Screen
-                name="CommonTimeslots"
+                name="CommonTimeSlots"
                 component={CommonTimeslots}
                 options={{ headerShown: true, title: "CommonTimeSlots" }}
               />
