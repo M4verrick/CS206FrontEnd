@@ -1,43 +1,89 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import MeetingService from "../meetingService"; // Ensure this path matches where your service is located
+import Service from "../service";
+const MeetingSuccessScreen = ({ route }) => {
+  const { meetingId } = route.params;
 
-const MeetingSuccessScreen = () => {
-  const handleAddToCalendar = () => {
-    // TODO: Implement functionality to add event to the calendar
-  };
+  // State to hold meeting details
+  const [meeting, setMeeting] = useState({
+    meetingName: "",
+    meetingStartDateTime: "",
+    meetingEndDateTime: "",
+    totalUsers: 0,
+    attendingUsers: 0,
+  });
+  const [team, setTeamDetails] = useState("");
+
+  useEffect(() => {
+    const fetchMeetingDetails = async () => {
+      try {
+        // Directly call MeetingService.getMeeting to fetch the meeting details
+        const meetingDetails = await MeetingService.getMeeting(meetingId);
+        const team = await Service.getTeamById(meetingDetails.meetingTeamId);
+        // Calculate the total strength based on the length of hasUserVoted
+        const totalUsers = Object.keys(meetingDetails.hasUserVoted).length;
+        // Find the number of users who can attend the meeting at the set timeslot
+        const timeslotKey = `${meetingDetails.meetingStartDateTime}_${meetingDetails.meetingEndDateTime}`;
+        const attendingUsers =
+          meetingDetails.meetingAvailabilities[timeslotKey] || 0;
+        setMeeting({
+          ...meetingDetails,
+          totalUsers,
+          attendingUsers,
+        });
+        setTeamDetails(team.teamName);
+      } catch (error) {
+        console.error("Failed to fetch meeting details:", error);
+        // Optionally, handle the error (e.g., set an error message in the state and display it)
+      }
+    };
+
+    fetchMeetingDetails();
+  }, [meetingId]); // Dependency array includes meetingId to refetch if it changes
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Successful!</Text>
-      <Text style={styles.meetingName}>CS301 Meeting</Text>
+      <Text style={styles.meetingName}>{meeting.meetingName}</Text>
 
       <View style={styles.detailsCard}>
         <Text style={styles.sectionTitle}>Meeting Details</Text>
 
         <View style={styles.detailRow}>
           <Ionicons name="people" size={24} color="black" />
-          <Text style={styles.detailText}>Group CS301</Text>
+          <Text style={styles.detailText}>{team}</Text>
         </View>
 
         <View style={styles.detailRow}>
           <Ionicons name="calendar" size={24} color="black" />
-          <Text style={styles.detailText}>Meeting Date 18/01/24</Text>
+          <Text style={styles.detailText}>
+            Meeting Date{" "}
+            {new Date(meeting.meetingStartDateTime).toLocaleDateString()}
+          </Text>
         </View>
 
         <View style={styles.detailRow}>
           <Ionicons name="time" size={24} color="black" />
-          <Text style={styles.detailText}>Meeting Time 11am - 1pm</Text>
+          <Text style={styles.detailText}>
+            Meeting Time{" "}
+            {new Date(meeting.meetingStartDateTime).toLocaleTimeString()} -{" "}
+            {new Date(meeting.meetingEndDateTime).toLocaleTimeString()}
+          </Text>
         </View>
 
         <View style={styles.detailRow}>
           <Ionicons name="stats-chart" size={24} color="black" />
-          <Text style={styles.detailText}>Attendance 5/5</Text>
+          <Text style={styles.detailText}>
+            Attendance {meeting.attendingUsers} / {meeting.totalUsers}
+          </Text>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleAddToCalendar}>
+        {/* The button for adding to calendar can be uncommented and implemented as needed */}
+        {/* <TouchableOpacity style={styles.button} onPress={handleAddToCalendar}>
           <Text style={styles.buttonText}>Add event to Calendar</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
