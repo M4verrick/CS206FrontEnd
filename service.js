@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://10.124.144.51:8080/api/v1/";
+const API_URL = "http://10.87.13.193:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
