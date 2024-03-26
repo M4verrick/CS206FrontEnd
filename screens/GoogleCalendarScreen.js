@@ -26,8 +26,9 @@ const GoogleCalendarScreen = ({ navigation }) => {
         try {
             Service.connectGoogleCalendar(userId).then((link) => {
                 console.log(link);
-                alert("Opening Google Authentication")
+                // alert("Opening Google Authentication")
                 Linking.openURL(link);
+                navigation.navigate("Login")
             })
         } catch (error) {
             console.log('Error:', error);
@@ -54,7 +55,7 @@ const GoogleCalendarScreen = ({ navigation }) => {
         alignItems: 'center', // Center horizontally
       },
       button: {
-        backgroundColor: 'blue', // Example background color
+        backgroundColor: 'black', // Example background color
         color: 'white', // Example text color
         paddingHorizontal: 20, // Example padding
         paddingVertical: 10,
@@ -64,3 +65,5 @@ const GoogleCalendarScreen = ({ navigation }) => {
         fontWeight: 'bold',
       },
     });
+
+    export default GoogleCalendarScreen;
