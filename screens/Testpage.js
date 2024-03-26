@@ -44,6 +44,10 @@ const TestPage = ({ navigation }) => {
         title="Go to HomePage"
         onPress={() => navigation.navigate("HomePage")}
       />
+      <Button
+        title="Go to PendingMeetings"
+        onPress={() => navigation.navigate("PendingMeetings")}
+      />
     </View>
   );
 };
