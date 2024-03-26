@@ -22,9 +22,9 @@ const LoginScreen = ({ navigation }) => {
       const user = await Service.login(email, password);
       if (user) {
         console.log("Login Successful", user);
-        // registerIndieID(user.id, 20396, "dawozslCZUCVBogYZ1F3t4");
         addMeetingIds([...user.userMeetingIds]);
         addUserTeamId([...user.teamIds]);
+        Service.connectGoogleCalendar(user.id);
         navigation.navigate("Testpage"); // Navigate to the next screen
       } else {
         // If the user entity is not returned, treat it as a failed login
