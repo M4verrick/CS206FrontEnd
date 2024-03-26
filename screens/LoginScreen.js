@@ -11,12 +11,14 @@ import {
 import Service from "../service";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
+import { useUserIdContext } from "../UserIdContext";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { addMeetingIds } = useMeetingIdContext();
   const { addUserTeamId } = useUserTeamIdContext();
+  const { addUserId } = useUserIdContext();
 
   const handleLoginPress = async () => {
     try {
@@ -25,6 +27,8 @@ const LoginScreen = ({ navigation }) => {
         console.log("Login Successful", user);
         addMeetingIds([...user.userMeetingIds]);
         addUserTeamId([...user.teamIds]);
+        addUserId(user.id);
+        console.log(user.id);
         Service.connectGoogleCalendar(user.id);
         navigation.navigate("Testpage"); // Navigate to the next screen
       } else {
