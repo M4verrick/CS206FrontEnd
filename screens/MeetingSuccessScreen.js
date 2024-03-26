@@ -15,34 +15,61 @@ const MeetingSuccessScreen = ({ route }) => {
     attendingUsers: 0,
   });
   const [team, setTeamDetails] = useState("");
+  const [otherMeetingsDetails, setOtherMeetingsDetails] = useState([]);
 
   useEffect(() => {
     const fetchMeetingDetails = async () => {
       try {
-        // Directly call MeetingService.getMeeting to fetch the meeting details
+        // Fetch details for the main meeting
         const meetingDetails = await MeetingService.getMeeting(meetingId);
         const team = await Service.getTeamById(meetingDetails.meetingTeamId);
-        // Calculate the total strength based on the length of hasUserVoted
         const totalUsers = Object.keys(meetingDetails.hasUserVoted).length;
-        // Find the number of users who can attend the meeting at the set timeslot
         const timeslotKey = `${meetingDetails.meetingStartDateTime}_${meetingDetails.meetingEndDateTime}`;
         const attendingUsers =
           meetingDetails.meetingAvailabilities[timeslotKey] || 0;
+
         setMeeting({
           ...meetingDetails,
           totalUsers,
           attendingUsers,
         });
         setTeamDetails(team.teamName);
+
+        // Fetch details for other meetings if they exist
+        if (meetingDetails.otherMeetingIds) {
+          const otherMeetingsPromises = meetingDetails.otherMeetingIds.map(
+            async (id) => {
+              const otherMeetingDetails = await MeetingService.getMeeting(id);
+              const otherMeetingTeam = await Service.getTeamById(
+                otherMeetingDetails.meetingTeamId
+              );
+              const otherTotalUsers = Object.keys(
+                otherMeetingDetails.hasUserVoted
+              ).length;
+              const otherTimeslotKey = `${otherMeetingDetails.meetingStartDateTime}_${otherMeetingDetails.meetingEndDateTime}`;
+              const otherAttendingUsers =
+                otherMeetingDetails.meetingAvailabilities[otherTimeslotKey] ||
+                0;
+
+              return {
+                ...otherMeetingDetails,
+                teamName: otherMeetingTeam.teamName,
+                totalUsers: otherTotalUsers,
+                attendingUsers: otherAttendingUsers,
+              };
+            }
+          );
+
+          const otherMeetingsDetails = await Promise.all(otherMeetingsPromises);
+          setOtherMeetingsDetails(otherMeetingsDetails);
+        }
       } catch (error) {
         console.error("Failed to fetch meeting details:", error);
-        // Optionally, handle the error (e.g., set an error message in the state and display it)
       }
     };
 
     fetchMeetingDetails();
-  }, [meetingId]); // Dependency array includes meetingId to refetch if it changes
-
+  }, [meetingId]);
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Successful!</Text>
@@ -79,6 +106,29 @@ const MeetingSuccessScreen = ({ route }) => {
             Attendance {meeting.attendingUsers} / {meeting.totalUsers}
           </Text>
         </View>
+        {/* Render other meetings details if they exist */}
+        {otherMeetingsDetails.length > 0 && (
+          <View>
+            <Text style={styles.sectionTitle}>Other Meetings Details:</Text>
+            {otherMeetingsDetails.map((meeting, index) => (
+              <View key={index} style={styles.detailsCard}>
+                <Text style={styles.detailText}>Team: {meeting.teamName}</Text>
+                <Text style={styles.detailText}>
+                  Meeting Date:{" "}
+                  {new Date(meeting.meetingStartDateTime).toLocaleDateString()}
+                </Text>
+                <Text style={styles.detailText}>
+                  Meeting Time:{" "}
+                  {new Date(meeting.meetingStartDateTime).toLocaleTimeString()}{" "}
+                  - {new Date(meeting.meetingEndDateTime).toLocaleTimeString()}
+                </Text>
+                <Text style={styles.detailText}>
+                  Attendance: {meeting.attendingUsers} / {meeting.totalUsers}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* The button for adding to calendar can be uncommented and implemented as needed */}
         {/* <TouchableOpacity style={styles.button} onPress={handleAddToCalendar}>
