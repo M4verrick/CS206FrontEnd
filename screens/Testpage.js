@@ -21,10 +21,6 @@ const TestPage = ({ navigation }) => {
         onPress={() => navigation.navigate("MeetingProgressScreen")}
       />
       <Button
-        title="Go to Meeting Config 2"
-        onPress={() => navigation.navigate("MeetingConfig2")}
-      />
-      <Button
         title="Go to Meeting Success Page"
         onPress={() => navigation.navigate("MeetingSuccessScreen")}
       />
