@@ -22,7 +22,7 @@ import { UserTeamIdProvider } from "./UserTeamIdContext";
 const Stack = createStackNavigator();
 
 export default function App() {
-  registerNNPushToken(20328, "yo2NfEZ8YjS8ZvKH1iQspw");
+  registerNNPushToken(20396, "dawozslCZUCVBogYZ1F3t4");
   return (
     <UserTeamIdProvider>
       <MeetingIdProvider>

@@ -10,14 +10,11 @@ import {
 } from "react-native";
 import Service from "../service";
 import { useMeetingIdContext } from "../MeetingIdContext";
-import { useUserIdContext } from "../UserIdContext";
-import { registerIndieID, unregisterIndieDevice } from "native-notify";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { addMeetingIds } = useMeetingIdContext();
-  const { addUserId } = useUserIdContext();
   const { addUserTeamId } = useUserTeamIdContext();
 
   const handleLoginPress = async () => {
@@ -25,8 +22,7 @@ const LoginScreen = ({ navigation }) => {
       const user = await Service.login(email, password);
       if (user) {
         console.log("Login Successful", user);
-        addUserId(user.id); // Add the user ID to your context or state management
-        registerIndieID(user.id, 20328, "yo2NfEZ8YjS8ZvKH1iQspw"); // Register for notifications
+        // registerIndieID(user.id, 20396, "dawozslCZUCVBogYZ1F3t4");
         addMeetingIds([...user.userMeetingIds]);
         addUserTeamId([...user.teamIds]);
         navigation.navigate("Testpage"); // Navigate to the next screen

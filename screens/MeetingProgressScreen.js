@@ -1,72 +1,89 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MeetingService from "../meetingService";
+import Service from "../service";
+import { handleNotifyPingPress } from "../notification";
+import { useUserIdContext } from "../UserIdContext";
 
-// Mock data - replace this with your actual data source
-const members = [
-  { id: "1", name: "Jack Smith", hasVoted: true },
-  { id: "2", name: "Emily Brown", hasVoted: false },
-  { id: "3", name: "John Doe", hasVoted: false },
-  { id: "4", name: "Jane Smith", hasVoted: false },
-  { id: "5", name: "Michael Johnson", hasVoted: false },
-];
-
-const MemberItem = ({ name, hasVoted, onPingPress }) => (
+const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
   <View style={styles.memberItem}>
     <Ionicons name="person-circle-outline" size={24} color="black" />
-    <Text style={styles.memberName}>
-      {name}
-      {hasVoted && " (You)"}
-    </Text>
-    {/* {!hasVoted && (
-      <TouchableOpacity onPress={onPingPress} style={styles.pingButton}>
+    <Text style={styles.memberName}>{name}</Text>
+    {!hasVoted && (
+      <TouchableOpacity
+        onPress={() => onPingPress(userId)}
+        style={styles.pingButton}
+      >
         <Text style={styles.pingButtonText}>Ping</Text>
       </TouchableOpacity>
-    )} */}
+    )}
   </View>
 );
 
-const MeetingProgressScreen = ({ meetingId }) => {
-  const [userVoted, setUserVoted] = useState();
-
+const MeetingProgressScreen = ({ navigation, route }) => {
+  const { meetingId } = route.params;
+  const [members, setMembers] = useState([]);
+  const [meetingName, setMeetingName] = useState(""); // State to store meeting name
+  const { addUserId } = useUserIdContext();
   useEffect(() => {
-    console.log(meetingId)
     const fetchUsers = async () => {
       try {
-        const meetingData = await MeetingService.getUserVoted();
-        const entries = Object.entries(meetingData);
-        setUserVoted(entries);
-        
+        const meetingData = await MeetingService.getMeeting(meetingId);
+        setMeetingName(meetingData.meetingName); // Assuming the meeting data has a 'name' field
+
+        const entries = Object.entries(meetingData.hasUserVoted);
+
+        // Fetch user names based on their IDs and update the state
+        const memberDataPromises = entries.map(async ([userId, hasVoted]) => {
+          const userData = await Service.getUserById(userId);
+          addUserId(userId);
+          return { id: userId, name: userData.userName, hasVoted };
+        });
+
+        const memberData = await Promise.all(memberDataPromises);
+        setMembers(memberData);
+        // Check if all members have voted
+        const allVoted = memberData.every((member) => member.hasVoted);
+        if (allVoted) {
+          setTimeout(() => {
+            // Navigate to MeetingSuccessScreen
+            navigation.navigate("MeetingSuccessScreen", {
+              meetingId: meetingId,
+            });
+          }, 3000); // Adjust delay as needed
+        }
       } catch (error) {
-        console.log(error);
-        Alert.alert('Error', 'Could not fetch meeting.');
+        console.error(error);
+        Alert.alert("Error", "Something went wrong");
       }
     };
     fetchUsers();
   }, []);
 
-
-
-  // const handlePingPress = (memberName) => {
-  //   // Implement your ping functionality here
-  //   console.log(`Ping ${memberName}`);
-  // };
-
+  const handlePingPress = (userId) => {
+    handleNotifyPingPress(userId, meetingName);
+    console.log(`Ping ${userId}`);
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Meeting Generation In Progress:</Text>
+      {/* Display the meeting name */}
+      <Text style={styles.meetingName}>
+        {meetingName || "Loading Meeting..."}
+      </Text>
 
+      <Text style={styles.header}>Meeting Generation In Progress:</Text>
       <Text style={styles.subHeader}>Members Voted</Text>
       <FlatList
-        data={userVoted.filter((member) => member.hasVoted)}
+        data={members.filter((member) => member.hasVoted)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <MemberItem
@@ -76,7 +93,6 @@ const MeetingProgressScreen = ({ meetingId }) => {
           />
         )}
       />
-
       <Text style={styles.subHeader}>Members Yet To Vote</Text>
       <FlatList
         data={members.filter((member) => !member.hasVoted)}
@@ -85,7 +101,7 @@ const MeetingProgressScreen = ({ meetingId }) => {
           <MemberItem
             name={item.name}
             hasVoted={item.hasVoted}
-            onPingPress={() => handlePingPress(item.name)}
+            onPingPress={() => handlePingPress(item.id)}
           />
         )}
       />
@@ -96,7 +112,14 @@ const MeetingProgressScreen = ({ meetingId }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50, // Adjust padding as needed
+    paddingTop: 50,
+  },
+  meetingName: {
+    // Style for the meeting name
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
   },
   header: {
     fontSize: 20,

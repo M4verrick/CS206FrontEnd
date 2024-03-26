@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://192.168.2.171:8080/api/v1/";
+const API_URL = "http://10.124.144.51:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // @GetMapping("/getAllMeetings")
@@ -95,23 +95,21 @@ const createMeeting = async (
 
 // @GetMapping("/{meetingId}/getCommonAvailabilities")
 // public ResponseEntity<Map<String,Integer>> getCommonAvailabilities (Return common availabilities and votes)
-const getCommonAvailabilities = (meetingId) => {
-  return axios
-    .get(
+const getCommonAvailabilities = async (meetingId) => {
+  try {
+    const response = await axios.get(
       API_URL + `meeting/${meetingId}/getCommonAvailabilities`,
       {
         meetingId,
       },
       { withCredentials: true }
-    )
-    .then((response) => {
-      const commonAvailabilities = response.data;
-      return commonAvailabilities;
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
+    );
+    const commonAvailabilities = response.data;
+    return commonAvailabilities;
+  } catch (error) {
+    console.error("Error fetching information:", error);
+    throw error;
+  }
 };
 
 // @PostMapping("{meetingId}/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{durationInSeconds}/rescheduleMeeting")
@@ -160,25 +158,24 @@ const rescheduleMeeting = (
 // - if all has voted
 // if single meeting, return ResponseEntity<Meeting>
 // if more than 1 meeting, return ResponseEntity<Map<Meeting,Boolean>>, list of meetings and if there is conflict
-const addVote = (meetingId, userId, availabilitiesVotes) => {
-  return axios
-    .put(
-      API_URL + `meeting/${meetingId}/${userId}/addVote`, availabilitiesVotes,
+const addVote = async (meetingId, userId, availabilitiesVotes) => {
+  try {
+    const response = await axios.put(
+      API_URL + `meeting/${meetingId}/${userId}/addVote`,
+      availabilitiesVotes,
       {
         meetingId,
         userId,
       },
       { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-      return inSet;
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
+    );
+    const inSet = response.data;
+    console.log(inSet);
+    return inSet;
+  } catch (error) {
+    console.error("Error fetching information:", error);
+    throw error;
+  }
 };
 
 // @PostMapping("{meetingId}/{teamId}/{meetingName}/{firstDateTimeLimit}/{lastDateTimeLimit}/{durationInSeconds}/{frequency}/rescheduleMeetingForConsecutive")
@@ -248,20 +245,18 @@ const deleteMeeting = (meetingId) => {
   );
 };
 
-const getUserVoted = (meetingId) => {
-  return axios.get(
-    API_URL + `meeting/${meetingId}/getCommonAvailabilities`,
-  )
-  .then((response) => {
-    const usersVoted = response.data;
-    return usersVoted;
-  })
-  .catch((error) => {
-    console.error("Error fetching information:", error);
-    throw error;
-  });
-
-}
+// const getUserVoted = (meetingId) => {
+//   return axios
+//     .get(API_URL + `meeting/${meetingId}/getMeeting`)
+//     .then((response) => {
+//       const usersVoted = response.data;
+//       return usersVoted;
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching information:", error);
+//       throw error;
+//     });
+// };
 
 const MeetingService = {
   getAllMeetings,
@@ -274,6 +269,5 @@ const MeetingService = {
   rescheduleMeetingForConsecutive,
   deleteConsecutiveMeetings,
   deleteMeeting,
-  getUserVoted
 };
 export default MeetingService;

@@ -8,8 +8,8 @@ const sendNotificationToUsers = (userIds, team) => {
     axios
       .post(`https://app.nativenotify.com/api/indie/notification`, {
         subID: userId, // Use the current userId in the iteration
-        appId: 20328,
-        appToken: "yo2NfEZ8YjS8ZvKH1iQspw",
+        appId: 20396,
+        appToken: "dawozslCZUCVBogYZ1F3t4",
         title: "Rescheduled meeting",
         message: `Meeting for ${team} has been rescheduled.`,
       })

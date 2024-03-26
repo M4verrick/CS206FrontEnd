@@ -8,7 +8,7 @@ export const UserIdProvider = ({ children }) => {
   const [userIds, setUserIds] = useState([]);
 
   const addUserId = (userId) => {
-    setUserIds([...userIds, userId]);
+    setUserIds([userId]);
   };
 
   return (

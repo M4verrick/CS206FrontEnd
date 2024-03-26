@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://192.168.2.171:8080/api/v1/";
+const API_URL = "http://10.124.144.51:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -24,14 +24,17 @@ const signUp = async (userName, userEmail, userPassword) => {
   }
 };
 
-const getUserById = async (userId) => {
-  try {
-    const response = await axios.get(`${API_URL}/user/${userId}/getUser`);
-    return response.data; // This will be the user object
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
-  }
+const getUserById = (userId) => {
+  return axios
+    .get(API_URL + `user/${userId}/getUser`, {}, { withCredentials: true })
+    .then((response) => {
+      const user = response.data;
+      return user;
+    })
+    .catch((error) => {
+      console.error("Error fetching information:", error);
+      throw error;
+    });
 };
 
 //login
@@ -56,22 +59,20 @@ const login = async (userEmail, userPassword) => {
 
 // @PostMapping("/{teamName}/{teamEmails}/createTeam")
 // public ResponseEntity<Team> createTeam
-const createTeam = (teamName, teamUserEmails) => {
-  return axios
-    .post(
+const createTeam = async (teamName, teamUserEmails) => {
+  try {
+    const response = await axios.post(
       `${API_URL}team/${teamName}/createTeam`, // Ensure the URL is constructed correctly
       teamUserEmails, // Directly pass teamUserEmails as the request body
       { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-      return inSet; // It's a good practice to return the data from your promise chain
-    })
-    .catch((error) => {
-      console.error("Error creating team:", error);
-      throw error; // Re-throwing the error is fine, but make sure you handle it where you call createTeam
-    });
+    );
+    const inSet = response.data;
+    console.log(inSet);
+    return inSet;
+  } catch (error) {
+    console.error("Error creating team:", error);
+    throw error; // Re-throwing the error is fine, but make sure you handle it where you call createTeam
+  }
 };
 
 // @PutMapping("/{userId}/{teamId}/addUser")
@@ -168,6 +169,7 @@ const connectGoogleCalendar = (userId) => {
 
 const Service = {
   createTeam,
+  getUserById,
   addUserToTeam,
   deleteTeamById,
   getTeamById,
