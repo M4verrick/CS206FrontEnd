@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://10.124.144.51:8080/api/v1/";
+const API_URL = "http://192.168.2.171:8080/api/v1/";
 axios.defaults.withCredentials = true;
 
 // @GetMapping("/getAllMeetings")
@@ -163,11 +163,10 @@ const rescheduleMeeting = (
 const addVote = (meetingId, userId, availabilitiesVotes) => {
   return axios
     .put(
-      API_URL + `meeting/${meetingId}/${userId}/${availabilitiesVotes}/addVote`,
+      API_URL + `meeting/${meetingId}/${userId}/addVote`, availabilitiesVotes,
       {
         meetingId,
         userId,
-        availabilitiesVotes,
       },
       { withCredentials: true }
     )
@@ -249,6 +248,21 @@ const deleteMeeting = (meetingId) => {
   );
 };
 
+const getUserVoted = (meetingId) => {
+  return axios.get(
+    API_URL + `meeting/${meetingId}/getCommonAvailabilities`,
+  )
+  .then((response) => {
+    const usersVoted = response.data;
+    return usersVoted;
+  })
+  .catch((error) => {
+    console.error("Error fetching information:", error);
+    throw error;
+  });
+
+}
+
 const MeetingService = {
   getAllMeetings,
   createNewMeeting,
@@ -260,5 +274,6 @@ const MeetingService = {
   rescheduleMeetingForConsecutive,
   deleteConsecutiveMeetings,
   deleteMeeting,
+  getUserVoted
 };
 export default MeetingService;

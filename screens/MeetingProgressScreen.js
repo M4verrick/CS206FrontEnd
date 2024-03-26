@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import MeetingService from "../meetingService";
 
 // Mock data - replace this with your actual data source
 const members = [
@@ -24,19 +25,40 @@ const MemberItem = ({ name, hasVoted, onPingPress }) => (
       {name}
       {hasVoted && " (You)"}
     </Text>
-    {!hasVoted && (
+    {/* {!hasVoted && (
       <TouchableOpacity onPress={onPingPress} style={styles.pingButton}>
         <Text style={styles.pingButtonText}>Ping</Text>
       </TouchableOpacity>
-    )}
+    )} */}
   </View>
 );
 
-const MeetingProgressScreen = () => {
-  const handlePingPress = (memberName) => {
-    // Implement your ping functionality here
-    console.log(`Ping ${memberName}`);
-  };
+const MeetingProgressScreen = ({ meetingId }) => {
+  const [userVoted, setUserVoted] = useState();
+
+  useEffect(() => {
+    console.log(meetingId)
+    const fetchUsers = async () => {
+      try {
+        const meetingData = await MeetingService.getUserVoted();
+        const entries = Object.entries(meetingData);
+        setUserVoted(entries);
+        
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Error', 'Could not fetch meeting.');
+      }
+    };
+    fetchUsers();
+  }, []);
+
+
+
+  // const handlePingPress = (memberName) => {
+  //   // Implement your ping functionality here
+  //   console.log(`Ping ${memberName}`);
+  // };
+
 
   return (
     <View style={styles.container}>
@@ -44,7 +66,7 @@ const MeetingProgressScreen = () => {
 
       <Text style={styles.subHeader}>Members Voted</Text>
       <FlatList
-        data={members.filter((member) => member.hasVoted)}
+        data={userVoted.filter((member) => member.hasVoted)}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <MemberItem
