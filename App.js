@@ -96,6 +96,12 @@ export default function App() {
                 options={{ headerShown: true, title: "HomePage" }}
               />
 
+              <Stack.Screen
+                name="PendingMeetings"
+                component={MeetingPage}
+                options={{ headerShown: true, title: "PendingMeetings" }}
+              />
+
               {/* ...other screens if any */}
             </Stack.Navigator>
           </NavigationContainer>
