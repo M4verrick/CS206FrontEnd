@@ -18,6 +18,7 @@ import MeetingProgressScreen from "./screens/MeetingProgressScreen";
 import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
 import HomePage from "./screens/HomePage";
 import { UserTeamIdProvider } from "./UserTeamIdContext";
+import PendingMeetings from "./screens/PendingMeetings";
 
 const Stack = createStackNavigator();
 
@@ -98,7 +99,7 @@ export default function App() {
 
               <Stack.Screen
                 name="PendingMeetings"
-                component={MeetingPage}
+                component={PendingMeetings}
                 options={{ headerShown: true, title: "PendingMeetings" }}
               />
 
