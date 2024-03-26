@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
-import {
-  Checkbox,
-  Card,
-  Button,
-  DefaultTheme,
-  PaperProvider,
-} from "react-native-paper";
+import React, { useState, useEffect } from 'react';
+import { ScrollView, View, Text, StyleSheet, Alert } from 'react-native';
+import { Checkbox, Card, Button, DefaultTheme, PaperProvider } from 'react-native-paper';
+import { useUserIdContext } from '../UserIdContext';
 import axios from "axios";
+import MeetingService from "../meetingService"
 
 const theme = {
   ...DefaultTheme,
@@ -19,184 +15,195 @@ const theme = {
   },
 };
 
-const CommonTimeslots = ({ meetingId }) => {
-  const [checkboxStates, setCheckboxStates] = useState([]);
+const CommonTimeslots = ({ route }) => {
+  const {meetingId} = route.params;
+  const { userId } = useUserIdContext();
+  const [checkedTimeslots, setCheckedTimeslots] = useState([]);
   const [timeslots, setTimeslots] = useState([]);
-  const [hasUserVoted, setHasUserVoted] = useState(false);
+  const finalMap = {};
 
-  // GET getMeeting
   useEffect(() => {
+    console.log(meetingId)
     const fetchMeeting = async () => {
       try {
-        const meetingsData = await Promise.all(
-          meetingId.map((id) =>
-            axios.get(`${API_URL}/meeting/${id}/getMeeting`, {
-              withCredentials: true,
-            })
-          )
-        );
-        const allTimeslots = meetingsData.flatMap((response) =>
-          response.data.meetingAvailabilities
-            ? Object.keys(response.data.meetingAvailabilities)
-            : []
-        );
-        // Assuming each meeting's data contains a `meetingAvailabilities` object with timeslots as keys
-        setTimeslots(allTimeslots);
-        setCheckboxStates(new Array(allTimeslots.length).fill(false));
-        // Assuming `hasUserVoted` is a boolean for simplicity, adjust based on your actual data structure
-        setHasUserVoted(
-          meetingsData.some((response) => response.data.hasUserVoted)
-        );
+        const commonTimeslots = await MeetingService.getCommonAvailabilities(meetingId);
+        // const meetingData = await axios.get(`${API_URL}/meeting/${meetingId}/getCommonAvailabilities`);
+        // const commonTimeslots = meetingData.data;
+        const entries = Object.entries(commonTimeslots);
+        console.log(entries);
+        setTimeslots(entries);
       } catch (error) {
-        console.error("Error fetching meeting:", error);
-        Alert.alert("Error", "Could not fetch meeting.");
+        console.log(error);
+        Alert.alert('Error', 'Could not fetch meeting.');
       }
     };
     fetchMeeting();
-  }, [meetingId]);
+  }, []);
 
-  // GET getCommonAvailabilities
-  useEffect(() => {
-    const fetchCommonAvailabilities = async () => {
-      try {
-        const commonData = await Promise.all(
-          meetingId.map((id) =>
-            axios.get(`${API_URL}/meeting/${id}/getCommonAvailabilities`, {
-              withCredentials: true,
-            })
-          )
-        );
-        const commonTimeslots = commonData.flatMap((response) =>
-          response.data.timeslots ? response.data.timeslots : []
-        );
-        // Assuming the API returns a 'timeslots' array
-        setTimeslots(commonTimeslots);
-        setCheckboxStates(new Array(commonTimeslots.length).fill(false));
-      } catch (error) {
-        console.error("Error fetching common availabilities:", error);
-        Alert.alert("Error", "Could not fetch common availabilities.");
-      }
-    };
-    if (meetingId.length > 0) {
-      fetchCommonAvailabilities();
-    }
-  }, [meetingId]);
 
-  const handleCheckboxPress = async (index) => {
-    const newCheckboxStates = [...checkboxStates];
-    newCheckboxStates[index] = !newCheckboxStates[index];
-    setCheckboxStates(newCheckboxStates);
+  const formatDateTimeRange = (dateTimeRangeString) => {
+    // Split the string by underscore to get start and end date-time
+    const [startDateTimeString, endDateTimeString] = dateTimeRangeString.split('_');
+    
+    // Parse start and end date-time strings into Date objects
+    const startDate = new Date(startDateTimeString);
+    const endDate = new Date(endDateTimeString);
+    
+    // Format start and end date-time without "at"
+    const formattedStartDateTime = formatDate(startDate) + " " + formatTime(startDate);
+    const formattedEndDateTime = formatDate(endDate) + " " + formatTime(endDate);
+    
+    // Construct the formatted date-time range string
+    return `${formattedStartDateTime} to\n${formattedEndDateTime}`;
+  };
+  
+  const formatDate = (date) => {
+    return date.toLocaleString('en-UK', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+  
+  const formatTime = (date) => {
+    return date.toLocaleString('en-UK', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true // Display hours in 12-hour format with "am" or "pm"
+    });
+  };
 
-    const availabilityMap = timeslots.reduce((map, timeslot, idx) => {
-      map[timeslot] = newCheckboxStates[idx];
-      return map;
-    }, {});
-
-    try {
-      const response = await axios.put(
-        `${API_URL}/meeting/${meetingId}/${userId}/addVote`, // Assuming the first meeting ID for example
-        { availabilityMap },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        console.log("Vote successfully recorded");
-        setHasUserVoted(true);
-      } else {
-        console.error("Failed to record vote");
-      }
-    } catch (error) {
-      console.error("Error submitting vote:", error);
+  const handleCheckboxClick = (timeslot) => {
+    const isChecked = checkedTimeslots.includes(timeslot);
+    if (isChecked) {
+      setCheckedTimeslots(checkedTimeslots.filter((slot) => slot !== timeslot));
+    } else {
+      setCheckedTimeslots([...checkedTimeslots, timeslot]);
     }
   };
 
-  // Function to format date and time
-  const formatDateTime = (isoString) => {
-    const date = new Date(isoString);
-    return new Intl.DateTimeFormat("en-UK", {
-      dateStyle: "full",
-      timeStyle: "short",
-    }).format(date);
+  const handleContinueClick = () => {
+    // Increment values for checked timeslots
+    const updatedTimeslots = timeslots.map(([timeslot, value]) => [
+      timeslot,
+      checkedTimeslots.includes(timeslot) ? value : value + 1,
+    ]);
+    setTimeslots(updatedTimeslots);
+    console.log(updatedTimeslots);
+    
+    updatedTimeslots.forEach(slot => {
+      finalMap[slot[0]] = slot[1];
+    });
+
+    handleContinue(finalMap);
   };
+
+  const handleContinue = async(finalMap) => {
+      console.log(finalMap)
+      MeetingService.addVote(meetingId, userId, finalMap)
+      // axios.put(`${API_URL}/meeting/${meetingId}/${userId}/addVote`, finalMap)
+      .then(response => {
+        console.log('POST request successful:', response.data);
+        Alert.alert("Successfully Voted");
+        setTimeout(() => {
+          navigation.navigate("MeetingProgressScreen", {
+            meetingId: meetingId
+          });
+        }, 2000);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
 
   return (
     <PaperProvider theme={theme}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Common Timeslots</Text>
-
         <Text style={styles.subtitle}>
-          These are the common available timeslots for the group, please uncheck
-          the timings that you are unable to make it for.
+          These are the common available timeslots for the group, please uncheck the timings that you are unable to make
+          it for.
         </Text>
-
-        {timeslots.map((timeslot, index) => (
-          <Card key={timeslot} style={styles.card}>
-            <View style={styles.row}>
-              <View style={styles.dateTime}>
-                {/* Display formatted date and time */}
-                <Text style={styles.dateTimeText}>
-                  {formatDateTime(timeslot)}
-                </Text>
+        
+          {timeslots.map(([timeslot, value]) => (
+            <Card key={timeslot} style={styles.card}>
+              <View style={styles.row}>
+                <View style={styles.dateTime}>
+                  <Text style={styles.dateTimeText}>{(formatDateTimeRange(timeslot))}</Text>
+                </View>
+                <View style={styles.checkboxContainer}>
+                <Checkbox
+                  status={checkedTimeslots.includes(timeslot) ? 'unchecked' : 'checked'}
+                  onPress={() => handleCheckboxClick(timeslot)}
+                  color="black"
+                  size={30}
+                />
               </View>
-              <Checkbox
-                status={checkboxStates[index] ? "checked" : "unchecked"}
-                onPress={() => handleCheckboxPress(index)}
-                disabled={hasUserVoted}
-              />
-            </View>
-          </Card>
-        ))}
-        <Button mode="outlined" style={styles.button}>
-          View my Calendar
-        </Button>
+              </View>
+            </Card>
+          ))}
 
-        <Button mode="outlined" style={styles.button}>
-          Continue
-        </Button>
-      </View>
+          <Button mode="outlined" style={styles.button} onPress={handleContinueClick}>
+            Continue
+          </Button>
+
+          <View style={styles.bottomSpace} />
+
+      </ScrollView>
     </PaperProvider>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
+    marginTop: 40,
+    alignItems: 'center',
     marginVertical: 10,
+    paddingHorizontal: 10,
+    overflow: 'auto',
   },
   title: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 24,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 12,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 10,
   },
   card: {
-    width: "100%",
+    width: '100%',
     marginBottom: 10,
     padding: 10,
-    backgroundColor: "#E7E7E7",
+    backgroundColor: '#E7E7E7',
   },
   row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   dateTime: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
   },
   dateTimeText: {
-    textAlign: "center",
+    textAlign: 'left',
+  },
+  checkboxContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 4,
+    // width: 30,
+    // height: 30
   },
   button: {
     marginVertical: 5,
+  },
+  bottomSpace: {
+    height: 80, // Adjust this value to leave desired space
   },
 });
 

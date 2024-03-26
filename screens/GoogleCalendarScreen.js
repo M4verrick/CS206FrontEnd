@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Linking from 'expo-linking'; // Import from expo-linking
 import Service from '../service';
+import { useUserIdContext } from '../UserIdContext';
 
 const GoogleCalendarScreen = ({ navigation }) => {
-    const userId = localStorage.getItem();
-    const API_URL = "http://10.124.137.18:8080/";
+    const { userId } = useUserIdContext();
+    // const API_URL = "http://10.124.137.18:8080/";
 
     const handleConnectGoogleCalendarButtonClick = async () => {
         // try {

@@ -111,9 +111,12 @@ const MeetingConfigurationScreen = ({ navigation }) => {
       );
       if (response) {
         Alert.alert("Meeting successfully created!");
-        navigation.navigate("CommonSlots", {
-          meetingId: response.id,
-        });
+        console.log(response.id)
+        setTimeout(() => {
+          navigation.navigate("CommonSlots", {
+            meetingId: response.id
+          });
+        }, 3000);
       } else {
         console.error("Failed to create meeting:", response.data);
       }
@@ -188,7 +191,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
 
       <Text style={styles.label}>Frequency</Text>
       <View style={styles.buttonGroup}>
-        {["Once", "Weekly", "Monthly", "Custom"].map((frequency) => (
+        {["Once", "Weekly", "Fortnight", "Monthly"].map((frequency) => (
           <TouchableOpacity
             key={frequency}
             style={[
