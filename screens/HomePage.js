@@ -15,35 +15,32 @@ const HomePage = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
   const { meetingIds } = useMeetingIdContext();
 
-  // Function to calculate the vote count
   const calculateVotes = (hasUserVoted) => {
     return hasUserVoted
       ? Object.values(hasUserVoted).filter((voted) => voted).length
       : 0;
   };
+
   const voteCountText = (meeting) => {
     const votedCount = calculateVotes(meeting.hasUserVoted);
     return `${votedCount}/${meeting.userCount} Voted`;
   };
+
   const handleDeleteMeeting = (meetingId) => {
-    // Display a confirmation alert before deleting
     Alert.alert(
       "Delete Meeting",
       "Are you sure you want to delete this meeting?",
       [
-        // User pressed 'No' option, do nothing
         {
           text: "No",
           onPress: () => console.log("Deletion cancelled."),
           style: "cancel",
         },
-        // User pressed 'Yes' option, delete meeting
         {
           text: "Yes",
           onPress: () => {
             MeetingService.deleteMeeting(meetingId);
             console.log(`Meeting with id ${meetingId} deleted.`);
-            // After deletion logic, filter out the meeting from the list
             setMeetings(meetings.filter((meeting) => meeting.id !== meetingId));
           },
         },
@@ -51,7 +48,6 @@ const HomePage = ({ navigation }) => {
     );
   };
 
-  // Simple date formatter function - you can replace it with a more robust solution
   const formatDate = (dateString) => {
     const options = {
       year: "2-digit",
@@ -72,10 +68,8 @@ const HomePage = ({ navigation }) => {
           fetchedMeetings.push(meeting);
         } catch (error) {
           console.error("Error fetching meeting:", error);
-          // Optionally handle the error e.g., by setting an error state or showing an alert
         }
       }
-      // Assuming that all meetings are either upcoming or pending, categorize accordingly
       setMeetings(fetchedMeetings);
     };
 
@@ -114,20 +108,6 @@ const HomePage = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ))}
-
-        <Text style={styles.sectionTitle}>Pending Meetings</Text>
-        {meetings
-          .filter((m) => !m.isMeetingSet && m.meetingName)
-          .map((meeting) => (
-            <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>{meeting.meetingName}</Text>
-              {/* Use the voteCountText function to display the number of votes */}
-              <Text style={styles.votesText}>
-                {meeting.hasUserVoted ? voteCountText(meeting) : "No votes"}
-              </Text>
-              {/* Delete button logic remains the same */}
-            </View>
-          ))}
       </ScrollView>
       <TouchableOpacity
         onPress={() => {
@@ -138,7 +118,7 @@ const HomePage = ({ navigation }) => {
         <Ionicons name="calendar" size={24} color="white" />
       </TouchableOpacity>
 
-      {/* New floating button on the bottom left */}
+      {/* Ensure this button is also included as it was in your original code */}
       <TouchableOpacity
         onPress={() => {
           navigation.navigate("CreateTeam");

@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MeetingService from "../meetingService"; // Ensure this path matches where your service is located
 import Service from "../service";
@@ -16,77 +23,163 @@ const MeetingSuccessScreen = ({ route }) => {
     attendingUsers: 0,
   });
   const [team, setTeamDetails] = useState("");
+  const [otherMeetingsDetails, setOtherMeetingsDetails] = useState([]);
 
   useEffect(() => {
     const fetchMeetingDetails = async () => {
       try {
-        // Directly call MeetingService.getMeeting to fetch the meeting details
+        // Fetch details for the main meeting
         const meetingDetails = await MeetingService.getMeeting(meetingId);
         const team = await Service.getTeamById(meetingDetails.meetingTeamId);
-        // Calculate the total strength based on the length of hasUserVoted
-        const totalUsers = Object.keys(meetingDetails.hasUserVoted).length;
-        // Find the number of users who can attend the meeting at the set timeslot
+        const totalUsers = Object.keys(
+          meetingDetails.hasUserVoted || {}
+        ).length;
         const timeslotKey = `${meetingDetails.meetingStartDateTime}_${meetingDetails.meetingEndDateTime}`;
         const attendingUsers =
           meetingDetails.meetingAvailabilities[timeslotKey] || 0;
+
         setMeeting({
           ...meetingDetails,
           totalUsers,
           attendingUsers,
         });
         setTeamDetails(team.teamName);
+
+        // Fetch details for other meetings if they exist
+        if (meetingDetails.otherMeetingsIds) {
+          const otherMeetingsPromises = meetingDetails.otherMeetingsIds.map(
+            async (id) => {
+              try {
+                const otherMeetingDetails = await MeetingService.getMeeting(id);
+                if (!otherMeetingDetails) {
+                  throw new Error(`Meeting details not found for ID: ${id}`);
+                }
+                const otherMeetingTeam = await Service.getTeamById(
+                  otherMeetingDetails.meetingTeamId
+                );
+                if (!otherMeetingTeam) {
+                  throw new Error(
+                    `Team details not found for meeting ID: ${id}`
+                  );
+                }
+                const otherTotalUsers = Object.keys(
+                  otherMeetingDetails.hasUserVoted || {}
+                ).length;
+                const otherTimeslotKey = `${otherMeetingDetails.meetingStartDateTime}_${otherMeetingDetails.meetingEndDateTime}`;
+                const otherAttendingUsers =
+                  otherMeetingDetails.meetingAvailabilities
+                    ? otherMeetingDetails.meetingAvailabilities[
+                        otherTimeslotKey
+                      ] || 0
+                    : 0;
+
+                return {
+                  ...otherMeetingDetails,
+                  teamName: otherMeetingTeam.teamName,
+                  totalUsers: otherTotalUsers,
+                  attendingUsers: otherAttendingUsers,
+                };
+              } catch (error) {
+                console.error(
+                  "Error fetching details for other meeting ID:",
+                  id,
+                  error
+                );
+                return null; // Skipping this meeting in case of error
+              }
+            }
+          );
+
+          const otherMeetingsDetailsResolved = await Promise.all(
+            otherMeetingsPromises
+          );
+          // Filter out any failed fetch attempts
+          const validMeetings = otherMeetingsDetailsResolved.filter(
+            (details) => details !== null
+          );
+          setOtherMeetingsDetails(validMeetings);
+        }
       } catch (error) {
-        console.error("Failed to fetch meeting details:", error);
-        // Optionally, handle the error (e.g., set an error message in the state and display it)
+        console.error("Failed to fetch main meeting details:", error);
       }
     };
 
     fetchMeetingDetails();
-  }, [meetingId]); // Dependency array includes meetingId to refetch if it changes
+  }, [meetingId]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Successful!</Text>
-      <Text style={styles.meetingName}>{meeting.meetingName}</Text>
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
+        <Text style={styles.header}>Meeting Success!</Text>
+        <Text style={styles.meetingName}>{meeting.meetingName}</Text>
 
-      <View style={styles.detailsCard}>
-        <Text style={styles.sectionTitle}>Meeting Details</Text>
-
-        <View style={styles.detailRow}>
-          <Ionicons name="people" size={24} color="black" />
-          <Text style={styles.detailText}>{team}</Text>
+        <View style={styles.detailsCard}>
+          <Text style={styles.sectionTitle}>{meeting.meetingName}</Text>
+          <View style={styles.detailRow}>
+            <Ionicons name="people" size={24} color="black" />
+            <Text style={styles.detailText}>{team}</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Ionicons name="calendar" size={24} color="black" />
+            <Text style={styles.detailText}>
+              Meeting Date:{" "}
+              {new Date(meeting.meetingStartDateTime).toLocaleDateString()}
+            </Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Ionicons name="time" size={24} color="black" />
+            <Text style={styles.detailText}>
+              Meeting Time:{" "}
+              {new Date(meeting.meetingStartDateTime).toLocaleTimeString()} -{" "}
+              {new Date(meeting.meetingEndDateTime).toLocaleTimeString()}
+            </Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Ionicons name="stats-chart" size={24} color="black" />
+            <Text style={styles.detailText}>
+              Attendance: {meeting.attendingUsers} / {meeting.totalUsers}
+            </Text>
+          </View>
         </View>
 
-        <View style={styles.detailRow}>
-          <Ionicons name="calendar" size={24} color="black" />
-          <Text style={styles.detailText}>
-            Meeting Date{" "}
-            {new Date(meeting.meetingStartDateTime).toLocaleDateString()}
-          </Text>
-        </View>
-
-        <View style={styles.detailRow}>
-          <Ionicons name="time" size={24} color="black" />
-          <Text style={styles.detailText}>
-            Meeting Time{" "}
-            {new Date(meeting.meetingStartDateTime).toLocaleTimeString()} -{" "}
-            {new Date(meeting.meetingEndDateTime).toLocaleTimeString()}
-          </Text>
-        </View>
-
-        <View style={styles.detailRow}>
-          <Ionicons name="stats-chart" size={24} color="black" />
-          <Text style={styles.detailText}>
-            Attendance {meeting.attendingUsers} / {meeting.totalUsers}
-          </Text>
-        </View>
-
-        {/* The button for adding to calendar can be uncommented and implemented as needed */}
-        {/* <TouchableOpacity style={styles.button} onPress={handleAddToCalendar}>
-          <Text style={styles.buttonText}>Add event to Calendar</Text>
-        </TouchableOpacity> */}
+        {otherMeetingsDetails.map((otherMeeting, index) => (
+          <View key={index} style={styles.detailsCard}>
+            <Text style={styles.sectionTitle}>{otherMeeting.meetingName}</Text>
+            <View style={styles.detailRow}>
+              <Ionicons name="people" size={24} color="black" />
+              <Text style={styles.detailText}>{otherMeeting.teamName}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Ionicons name="calendar" size={24} color="black" />
+              <Text style={styles.detailText}>
+                Meeting Date:{" "}
+                {new Date(
+                  otherMeeting.meetingStartDateTime
+                ).toLocaleDateString()}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Ionicons name="time" size={24} color="black" />
+              <Text style={styles.detailText}>
+                Meeting Time:{" "}
+                {new Date(
+                  otherMeeting.meetingStartDateTime
+                ).toLocaleTimeString()}{" "}
+                -{" "}
+                {new Date(otherMeeting.meetingEndDateTime).toLocaleTimeString()}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Ionicons name="stats-chart" size={24} color="black" />
+              <Text style={styles.detailText}>
+                Attendance: {otherMeeting.attendingUsers} /{" "}
+                {otherMeeting.totalUsers}
+              </Text>
+            </View>
+          </View>
+        ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -120,6 +213,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    marginBottom: 30,
   },
   sectionTitle: {
     fontSize: 16,
