@@ -1,7 +1,9 @@
 import axios from "axios";
 
 //need change to ip address
-const API_URL = "http://10.124.144.51:8080/api/v1/";
+// const API_URL = "http://10.124.144.51:8080/api/v1/";
+const API_URL = "http://192.168.2.171:8080/api/v1/";
+const API_URL_GOOGLE = "http://192.168.2.171:8080/"
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -154,7 +156,7 @@ const getAllMeetingsInTeam = (teamId) => {
 
 const connectGoogleCalendar = (userId) => {
   return axios
-    .get(API_URL + `Google/${userId}/startOAuth`, {
+    .get(API_URL_GOOGLE + `Google/${userId}/startOAuth`, {
       userId,
     })
     .then((response) => {

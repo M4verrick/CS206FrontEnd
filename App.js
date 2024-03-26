@@ -17,6 +17,7 @@ import ScheduleScreen from "./screens/ScheduleScreen";
 import MeetingProgressScreen from "./screens/MeetingProgressScreen";
 import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
 import HomePage from "./screens/HomePage";
+import GoogleCalendarScreen from "./screens/GoogleCalendarScreen"
 import { UserTeamIdProvider } from "./UserTeamIdContext";
 
 const Stack = createStackNavigator();
@@ -94,6 +95,11 @@ export default function App() {
                 name="HomePage"
                 component={HomePage}
                 options={{ headerShown: true, title: "HomePage" }}
+              />
+              <Stack.Screen
+                name="GoogleCalendar"
+                component={GoogleCalendarScreen}
+                options={{ headerShown: true, title: "Google Calendar" }}
               />
 
               {/* ...other screens if any */}

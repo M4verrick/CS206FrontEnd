@@ -44,6 +44,10 @@ const TestPage = ({ navigation }) => {
         title="Go to HomePage"
         onPress={() => navigation.navigate("HomePage")}
       />
+       <Button
+        title="Go to Google Caledenar"
+        onPress={() => navigation.navigate("GoogleCalendar")}
+      />
     </View>
   );
 };

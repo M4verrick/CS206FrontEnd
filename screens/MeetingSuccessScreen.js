@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MeetingService from "../meetingService"; // Ensure this path matches where your service is located
 import Service from "../service";
+
 const MeetingSuccessScreen = ({ route }) => {
   const { meetingId } = route.params;
 

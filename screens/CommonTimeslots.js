@@ -115,11 +115,19 @@ const CommonTimeslots = ({ navigation, route }) => {
       .then((response) => {
         console.log("POST request successful:", response.data);
         Alert.alert("Successfully Voted");
-        setTimeout(() => {
-          navigation.navigate("MeetingProgressScreen", {
+
+        if (response.data == "User Voted Successfully"){
+          setTimeout(() => {
+            navigation.navigate("MeetingProgressScreen", {
+              meetingId: meetingId,
+            });
+          }, 2000);
+        } else {
+          navigation.navigate("MeetingSuccessScreen", {
             meetingId: meetingId,
-          });
-        }, 2000);
+          })
+        }
+        
       })
       .catch((error) => {
         console.error("Error:", error);

@@ -34,6 +34,7 @@ const MeetingProgressScreen = ({ navigation, route }) => {
   const [members, setMembers] = useState([]);
   const [meetingName, setMeetingName] = useState(""); // State to store meeting name
   const { addUserId } = useUserIdContext();
+  
   useEffect(() => {
     const fetchUsers = async () => {
       try {

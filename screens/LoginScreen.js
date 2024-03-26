@@ -11,6 +11,7 @@ import {
 import Service from "../service";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
