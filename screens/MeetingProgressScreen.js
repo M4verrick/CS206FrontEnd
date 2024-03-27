@@ -30,7 +30,7 @@ const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
 
 const MeetingProgressScreen = ({ navigation, route }) => {
   // const { meetingId } = route.params;
-  const meetingId = "65f5bb3f07dba76c5183651b";
+  const meetingId = "660103dae2f6491bffc4a5a8";
   const [members, setMembers] = useState([]);
   const [meetingName, setMeetingName] = useState(""); // State to store meeting name
   const { addUserId } = useUserIdContext();
@@ -53,8 +53,8 @@ const MeetingProgressScreen = ({ navigation, route }) => {
         const memberData = await Promise.all(memberDataPromises);
         setMembers(memberData);
         // Check if all members have voted
-        const allVoted = memberData.every((member) => member.hasVoted);
-        if (allVoted) {
+        const isMeetingSet = meetingData.isMeetingSet;
+        if (isMeetingSet) {
           setTimeout(() => {
             // Navigate to MeetingSuccessScreen
             navigation.navigate("MeetingSuccessScreen", {
@@ -70,8 +70,9 @@ const MeetingProgressScreen = ({ navigation, route }) => {
     fetchUsers();
   }, []);
 
-  const handlePingPress = (userId) => {
+  const handlePingPress = (userId, userName) => {
     handleNotifyPingPress(userId, meetingName);
+    Alert.alert("You have pinged " + userName);
     console.log(`Ping ${userId}`);
   };
 
@@ -103,7 +104,7 @@ const MeetingProgressScreen = ({ navigation, route }) => {
           <MemberItem
             name={item.name}
             hasVoted={item.hasVoted}
-            onPingPress={() => handlePingPress(item.id)}
+            onPingPress={() => handlePingPress(item.id, item.name)}
           />
         )}
       />

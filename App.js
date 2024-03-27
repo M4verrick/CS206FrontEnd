@@ -19,6 +19,8 @@ import MeetingSuccessScreen from "./screens/MeetingSuccessScreen";
 import HomePage from "./screens/HomePage";
 import GoogleCalendarScreen from "./screens/GoogleCalendarScreen"
 import { UserTeamIdProvider } from "./UserTeamIdContext";
+import PendingMeetings from "./screens/PendingMeetings";
+import UserEvents from "./screens/UserEvents";
 
 const Stack = createStackNavigator();
 
@@ -100,6 +102,17 @@ export default function App() {
                 name="GoogleCalendar"
                 component={GoogleCalendarScreen}
                 options={{ headerShown: true, title: "Google Calendar" }}
+              />
+
+              <Stack.Screen
+                name="PendingMeetings"
+                component={PendingMeetings}
+                options={{ headerShown: true, title: "PendingMeetings" }}
+              />
+              <Stack.Screen
+                name="UserEvents"
+                component={UserEvents}
+                options={{ headerShown: true, title: "UserEvents" }}
               />
 
               {/* ...other screens if any */}

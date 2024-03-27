@@ -1,9 +1,15 @@
 import axios from "axios";
 
 //need change to ip address
+
 // const API_URL = "http://10.124.144.51:8080/api/v1/";
 const API_URL = "http://10.124.10.120:8080/api/v1/";
 const API_URL_GOOGLE = "http://10.124.10.120:8080/"
+// const API_URL = "http://192.168.2.171:8080/api/v1/";
+// const API_URL_GOOGLE = "http://192.168.2.171:8080/";
+
+// const API_URL = "http://172.20.10.3:8080/api/v1/";
+
 axios.defaults.withCredentials = true;
 
 // register new user
@@ -169,6 +175,55 @@ const connectGoogleCalendar = (userId) => {
     });
 };
 
+// Method to get meetings that a user has voted on
+const getPendingUserVotedMeetings = (userId) => {
+  return axios
+    .get(API_URL + `user/${userId}/getPendingUserVotedMeetings`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      const votedMeetings = response.data;
+      console.log("Fetched user voted meetings:", votedMeetings);
+      return votedMeetings;
+    })
+    .catch((error) => {
+      console.error("Error fetching pending user voted meetings:", error);
+      throw error;
+    });
+};
+
+// Method to get meetings that a user has not voted on
+const getPendingUserNotVotedMeetings = (userId) => {
+  return axios
+    .get(API_URL + `user/${userId}/getPendingUserNotVotedMeetings`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      const notVotedMeetings = response.data;
+      console.log("Fetched user not voted meetings:", notVotedMeetings);
+      return notVotedMeetings;
+    })
+    .catch((error) => {
+      console.error("Error fetching pending user not voted meetings:", error);
+      throw error;
+    });
+};
+
+const getUserEvents = (userId, meetingId) => {
+  return axios
+    .get(API_URL + `user/${userId}/${meetingId}/getUserEvents`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      const userEvents = response.data;
+      return userEvents;
+    })
+    .catch((error) => {
+      console.error("Error fetching userEvents", error);
+      throw error;
+    });
+};
+
 const Service = {
   createTeam,
   getUserById,
@@ -179,6 +234,9 @@ const Service = {
   connectGoogleCalendar,
   signUp,
   login,
+  getPendingUserVotedMeetings, // Add this line
+  getPendingUserNotVotedMeetings, // And this line
+  getUserEvents,
 };
 
 export default Service;

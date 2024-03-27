@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,14 +8,39 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+// Assuming Service and MeetingService are correctly implemented to return the relevant data
+import Service from "../service";
+import MeetingService from "../meetingService";
+
 const screenWidth = Dimensions.get("window").width;
 
 const RescheduleMeetingScreen = ({ route, navigation }) => {
-  // Extract the teamName from route.params
-  const { teamName } = route.params;
+  const { meetingId } = route.params;
+  const [teamName, setTeamName] = useState("");
+  const [meetingName, setMeetingName] = useState("");
+
+  useEffect(() => {
+    const loadMeetingData = async () => {
+      try {
+        // Get the meeting details using the meeting ID
+        const meetingDetails = await MeetingService.getMeeting(meetingId);
+        console.log(meetingDetails);
+
+        // Use the team ID from the meeting details to get the team name
+        const teamDetails = await Service.getTeamById(
+          meetingDetails.meetingTeamId
+        );
+        setTeamName(teamDetails.teamName); // Update state with the team name
+        setMeetingName(meetingDetails.meetingName);
+      } catch (error) {
+        console.error("Failed to load meeting or team details:", error);
+      }
+    };
+
+    loadMeetingData();
+  }, [meetingId]);
 
   const handleRescheduleConfirm = () => {
-    // TODO: Implement the reschedule logic
     console.log("Reschedule confirmed");
     navigation.navigate("MeetingList");
   };
@@ -29,8 +54,9 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.card}>
         <Ionicons name="calendar" size={60} color="#4e5d78" />
-        {/* Use the teamName passed from the MeetingList component */}
-        <Text style={styles.title}>Reschedule {teamName}?</Text>
+        <Text style={styles.title}>
+          Reschedule {meetingName} for {teamName}?
+        </Text>
         <Text style={styles.warning}>
           WARNING: This action cannot be undone.
         </Text>

@@ -27,8 +27,10 @@ const CommonTimeslots = ({ navigation, route }) => {
   const [checkedTimeslots, setCheckedTimeslots] = useState([]);
   const [timeslots, setTimeslots] = useState([]);
   const finalMap = {};
+ 
 
   useEffect(() => {
+    console.log(userId)
     console.log(meetingId);
     const fetchMeeting = async () => {
       try {
@@ -134,6 +136,12 @@ const CommonTimeslots = ({ navigation, route }) => {
       });
   };
 
+  const handleUserEventsClick = () => {
+    navigation.navigate("UserEvents", {
+      meetingId: meetingId,
+    })
+  }
+
   return (
     <PaperProvider theme={theme}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -166,6 +174,14 @@ const CommonTimeslots = ({ navigation, route }) => {
             </View>
           </Card>
         ))}
+
+        <Button
+          mode="outlined"
+          style={styles.button}
+          onPress={handleUserEventsClick}
+        >
+          My Calendar
+        </Button>
 
         <Button
           mode="outlined"
