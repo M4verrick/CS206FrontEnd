@@ -15,36 +15,41 @@ const UserEvents = ({ navigation, route }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       const fetchedEvents = {};
-        try {
-          const userEvents = await Service.getUserEvents(userId, meetingId);
-          console.log(userEvents)
-          for (let userEvent of userEvents){
-            const startDate = userEvent.eventStartDateTime
-            ? meeting.meetingStartDateTime.split("T")[0]
+      try {
+        const userEvents = await Service.getUserEvents(userId, meetingId);
+        console.log(userEvents);
+        for (let userEvent of userEvents) {
+          const startDate = userEvent.eventStartDateTime
+            ? userEvent.eventStartDateTime.split("T")[0]
             : "No Start Date";
 
-            if (!fetchedEvents[startDate]) {
-              fetchedEvents[startDate] = [];
-            }
-
-            fetchedEvents[startDate].push({
-              name: userEvent.eventName,
-              start: userEvent.eventStartDateTime,
-              end: userEvent.user,
-              // duration: meeting.meetingDurationInSeconds,
-              // Include any other properties that might be needed
-            });
+          if (!fetchedEvents[startDate]) {
+            fetchedEvents[startDate] = [];
           }
-          // Before using split, check if meeting.meetingStartDateTime is not null or undefined
-        } catch (error) {
-          console.error("Error fetching meeting:", error);
+          console.log("USER EVENT: " + userEvent.eventName);
+          console.log("USER EVENT: " + userEvent.eventStartDateTime);
+          console.log("USER EVENT: " + userEvent.eventEndDateTime);
+
+          fetchedEvents[startDate].push({
+            name: userEvent.eventName,
+            start: userEvent.eventStartDateTime,
+            end: userEvent.eventEndDateTime,
+            // duration: meeting.meetingDurationInSeconds,
+            // Include any other properties that might be needed
+          });
+          console.log(fetchedEvents[startDate]);
         }
-      
+        // Before using split, check if meeting.meetingStartDateTime is not null or undefined
+      } catch (error) {
+        console.error("Error fetching meeting:", error);
+      }
+
       setItems(fetchedEvents);
     };
 
     fetchEvents(userId, meetingId);
   }, []);
+  console.log(items);
 
   const renderItem = (item) => {
     return (

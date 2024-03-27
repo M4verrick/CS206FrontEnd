@@ -39,7 +39,7 @@ const ScheduleScreen = ({ navigation }) => {
 
     fetchMeetings();
   }, [meetingIds]);
-
+  console.log(items);
   const renderItem = (item) => {
     return (
       <View style={styles.item}>

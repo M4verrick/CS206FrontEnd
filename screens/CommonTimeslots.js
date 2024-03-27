@@ -27,10 +27,9 @@ const CommonTimeslots = ({ navigation, route }) => {
   const [checkedTimeslots, setCheckedTimeslots] = useState([]);
   const [timeslots, setTimeslots] = useState([]);
   const finalMap = {};
- 
 
   useEffect(() => {
-    console.log(userId)
+    console.log("USERID IN COMMONTIMESLOTS " + userId);
     console.log(meetingId);
     const fetchMeeting = async () => {
       try {
@@ -118,7 +117,7 @@ const CommonTimeslots = ({ navigation, route }) => {
         console.log("POST request successful:", response.data);
         Alert.alert("Successfully Voted");
 
-        if (response.data == "User Voted Successfully"){
+        if (response.data == "User Voted Successfully") {
           setTimeout(() => {
             navigation.navigate("MeetingProgressScreen", {
               meetingId: meetingId,
@@ -127,9 +126,8 @@ const CommonTimeslots = ({ navigation, route }) => {
         } else {
           navigation.navigate("MeetingSuccessScreen", {
             meetingId: meetingId,
-          })
+          });
         }
-        
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -139,8 +137,8 @@ const CommonTimeslots = ({ navigation, route }) => {
   const handleUserEventsClick = () => {
     navigation.navigate("UserEvents", {
       meetingId: meetingId,
-    })
-  }
+    });
+  };
 
   return (
     <PaperProvider theme={theme}>
