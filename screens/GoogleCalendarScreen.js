@@ -12,8 +12,8 @@ import Service from "../service";
 import { useUserIdContext } from "../UserIdContext";
 import { LinearGradient } from "expo-linear-gradient";
 
-const GoogleCalendarScreen = ({ navigation }) => {
-  const { userId } = useUserIdContext();
+const GoogleCalendarScreen = ({ navigation, route }) => {
+  const { userId } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   // const API_URL = "http://10.124.137.18:8080/";
 
@@ -36,7 +36,7 @@ const GoogleCalendarScreen = ({ navigation }) => {
         console.log(link);
         // alert("Opening Google Authentication")
         Linking.openURL(link);
-        navigation.navigate("Login");
+        navigation.navigate("HomePage");
       });
     } catch (error) {
       console.log("Error:", error);

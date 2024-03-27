@@ -113,7 +113,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         Alert.alert("Meeting successfully created!");
         setTimeout(() => {
           navigation.navigate("CommonSlots", {
-            meetingId: response.id
+            meetingId: response.id,
           });
         }, 3000);
       } else {
@@ -204,8 +204,8 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         ))}
       </View>
 
-      {/* Date and Time Pickers for Start and End Times */}
-      <Text style={styles.label}>Start Date and Time</Text>
+      {/* Start Date Picker */}
+      <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => setShowDatePicker({ ...showDatePicker, start: true })}
@@ -223,6 +223,27 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         />
       )}
 
+      {/* End Date Picker */}
+      <Text style={styles.label}>End Date</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => setShowDatePicker({ ...showDatePicker, end: true })}
+      >
+        <Text>Select End Date</Text>
+      </TouchableOpacity>
+      {showDatePicker.end && (
+        <DateTimePicker
+          value={endDate}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) =>
+            setEndDate(selectedDate || endDate)
+          }
+        />
+      )}
+
+      {/* Start Time Picker */}
+      <Text style={styles.label}>Start Time</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => setShowTimePicker({ ...showTimePicker, start: true })}
@@ -241,24 +262,8 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         />
       )}
 
-      <Text style={styles.label}>End Date and Time</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => setShowDatePicker({ ...showDatePicker, end: true })}
-      >
-        <Text>Select End Date</Text>
-      </TouchableOpacity>
-      {showDatePicker.end && (
-        <DateTimePicker
-          value={endDate}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) =>
-            setEndDate(selectedDate || endDate)
-          }
-        />
-      )}
-
+      {/* End Time Picker */}
+      <Text style={styles.label}>End Time</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => setShowTimePicker({ ...showTimePicker, end: true })}

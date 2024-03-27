@@ -178,7 +178,7 @@ const CommonTimeslots = ({ navigation, route }) => {
           style={styles.button}
           onPress={handleUserEventsClick}
         >
-          My Calendar
+          My Calendar Within Meeting Timeframe
         </Button>
 
         <Button
