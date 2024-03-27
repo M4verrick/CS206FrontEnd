@@ -8,7 +8,11 @@ const API_URL_GOOGLE = "http://10.124.144.51:8080/";
 // const API_URL = "http://192.168.2.171:8080/api/v1/";
 // const API_URL_GOOGLE = "http://192.168.2.171:8080/";
 
+<<<<<<< HEAD
+const API_URL = "http://10.87.13.193:8080/api/v1/";
+=======
 // const API_URL = "http://172.20.10.3:8080/api/v1/";
+>>>>>>> 74425ba0f15a8c784476d37f3bfeb292acb213bd
 
 axios.defaults.withCredentials = true;
 
