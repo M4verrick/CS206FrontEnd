@@ -3,10 +3,12 @@ import axios from "axios";
 //need change to ip address
 
 // const API_URL = "http://10.124.144.51:8080/api/v1/";
+const API_URL = "http://10.124.10.120:8080/api/v1/";
+const API_URL_GOOGLE = "http://10.124.10.120:8080/"
 // const API_URL = "http://192.168.2.171:8080/api/v1/";
-const API_URL_GOOGLE = "http://192.168.2.171:8080/";
+// const API_URL_GOOGLE = "http://192.168.2.171:8080/";
 
-const API_URL = "http://172.20.10.3:8080/api/v1/";
+// const API_URL = "http://172.20.10.3:8080/api/v1/";
 
 axios.defaults.withCredentials = true;
 
@@ -207,6 +209,21 @@ const getPendingUserNotVotedMeetings = (userId) => {
     });
 };
 
+const getUserEvents = (userId, meetingId) => {
+  return axios
+    .get(API_URL + `user/${userId}/${meetingId}/getUserEvents`, {
+      withCredentials: true,
+    })
+    .then((response) => {
+      const userEvents = response.data;
+      return userEvents;
+    })
+    .catch((error) => {
+      console.error("Error fetching userEvents", error);
+      throw error;
+    });
+};
+
 const Service = {
   createTeam,
   getUserById,
@@ -219,6 +236,7 @@ const Service = {
   login,
   getPendingUserVotedMeetings, // Add this line
   getPendingUserNotVotedMeetings, // And this line
+  getUserEvents,
 };
 
 export default Service;
