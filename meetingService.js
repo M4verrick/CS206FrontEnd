@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 
-const API_URL = "http://192.168.1.112:8080/api/v1/";
+const API_URL = "http://10.87.13.193:8080/api/v1/";
 
 axios.defaults.withCredentials = true;
 
