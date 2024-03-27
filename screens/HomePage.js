@@ -92,7 +92,7 @@ const HomePage = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("RescheduleMeeting", {
-                    teamName: meeting.meetingName,
+                    meetingId: meeting.id,
                   })
                 }
                 style={styles.button}

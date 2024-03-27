@@ -29,6 +29,7 @@ const CommonTimeslots = ({ navigation, route }) => {
   const finalMap = {};
 
   useEffect(() => {
+    console.log("USERID IN COMMONTIMESLOTS " + userId);
     console.log(meetingId);
     const fetchMeeting = async () => {
       try {
@@ -116,7 +117,7 @@ const CommonTimeslots = ({ navigation, route }) => {
         console.log("POST request successful:", response.data);
         Alert.alert("Successfully Voted");
 
-        if (response.data == "User Voted Successfully"){
+        if (response.data == "User Voted Successfully") {
           setTimeout(() => {
             navigation.navigate("MeetingProgressScreen", {
               meetingId: meetingId,
@@ -125,13 +126,18 @@ const CommonTimeslots = ({ navigation, route }) => {
         } else {
           navigation.navigate("MeetingSuccessScreen", {
             meetingId: meetingId,
-          })
+          });
         }
-        
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+  };
+
+  const handleUserEventsClick = () => {
+    navigation.navigate("UserEvents", {
+      meetingId: meetingId,
+    });
   };
 
   return (
@@ -166,6 +172,14 @@ const CommonTimeslots = ({ navigation, route }) => {
             </View>
           </Card>
         ))}
+
+        <Button
+          mode="outlined"
+          style={styles.button}
+          onPress={handleUserEventsClick}
+        >
+          My Calendar
+        </Button>
 
         <Button
           mode="outlined"

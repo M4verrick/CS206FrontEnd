@@ -28,7 +28,7 @@ const LoginScreen = ({ navigation }) => {
         addMeetingIds([...user.userMeetingIds]);
         addUserTeamId([...user.teamIds]);
         addUserId(user.id);
-        console.log(user.id);
+        console.log("USER ID: " + user.id);
         Service.connectGoogleCalendar(user.id);
         navigation.navigate("Testpage"); // Navigate to the next screen
       } else {
