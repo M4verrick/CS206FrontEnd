@@ -15,6 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Service from "../service";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
 import { useUserIdContext } from "../UserIdContext";
+import { notifyTeamOfNewMeeting } from "../notification";
 
 const MeetingConfigurationScreen = ({ navigation }) => {
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -110,6 +111,11 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         durationInSeconds,
         frequency
       );
+      const team = await Service.getTeamById(teamId);
+      notifyTeamOfNewMeeting(team.teamName, team.teamUserIds);
+      console.log(team.teamName);
+      console.log(team.teamUserIds);
+
       if (response) {
         Alert.alert("Meeting successfully created!");
         setTimeout(() => {
