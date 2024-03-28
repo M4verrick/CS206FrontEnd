@@ -10,6 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import MeetingService from "../meetingService";
+import Service from "../service";
 
 const HomePage = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
@@ -18,7 +19,8 @@ const HomePage = ({ navigation }) => {
   useEffect(() => {
     const fetchMeetings = async () => {
       const fetchedMeetings = [];
-      for (let id of meetingIds) {
+      const setMeetingIds = await Service.getAllSetMeetingIds;
+      for (let id of setMeetingIds) {
         try {
           const meeting = await MeetingService.getMeeting(id);
           fetchedMeetings.push(meeting);
@@ -30,7 +32,7 @@ const HomePage = ({ navigation }) => {
     };
 
     fetchMeetings();
-  }, [meetingIds]);
+  }, []);
 
   const handleDeleteMeeting = (meetingId) => {
     Alert.alert(
