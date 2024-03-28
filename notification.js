@@ -69,6 +69,26 @@ const sendNotificationToUserForMeting = async (subId, teamName) => {
     console.error("Error sending notification:", error);
   }
 };
+const sendNotificationForScheduledMeeting = async (subId, meetingName) => {
+  try {
+    const response = await axios.post(
+      `https://app.nativenotify.com/api/indie/notification`,
+      {
+        subID: subId, // Use the passed subId for the notification
+        appId: appId,
+        appToken: appToken,
+        title: "Meeting Scheduled",
+        message: `The meeting "${meetingName}" has been successfully scheduled.`,
+      }
+    );
+    console.log(
+      "Scheduled meeting notification sent successfully:",
+      response.data
+    );
+  } catch (error) {
+    console.error("Error sending scheduled meeting notification:", error);
+  }
+};
 
 export const notifyUsersAboutTeamCreation = async (userIds, teamName) => {
   for (const userId of userIds) {
@@ -86,7 +106,7 @@ export const notifyUsersAboutTeamCreation = async (userIds, teamName) => {
     setTimeout(() => {
       console.log(`Sending team creation notification to userId: ${userId}`);
       sendNotificationToUser(userId, teamName);
-    }, 3000); // Adjust delay as necessary
+    }, 500); // Adjust delay as necessary
   }
 };
 
@@ -100,6 +120,30 @@ export const handleNotifyPingPress = async (subId, meetingName) => {
   }
   sendNotificationToUserToVote(subId, meetingName);
 };
+export const notifyUsersOfScheduledMeeting = async (userIds, meetingName) => {
+  for (const userId of userIds) {
+    console.log(
+      `Processing notification for scheduled meeting for userId: ${userId}`
+    );
+    const isRegistered = await isUserRegistered(userId);
+    if (!isRegistered) {
+      console.log(`User ${userId} is not registered. Registering now...`);
+      registerIndieID(userId, appId, appToken); // Register the user
+      // Consider adding a slight delay after registration to ensure
+      // the registration process is complete before sending a notification.
+      // However, this might not be necessary depending on how registerIndieID functions internally.
+    }
+
+    // Wait a moment after registration before attempting to send a notification
+    setTimeout(() => {
+      console.log(
+        `Sending scheduled meeting notification to userId: ${userId}`
+      );
+      sendNotificationForScheduledMeeting(userId, meetingName);
+    }, 500); // Adjust delay as necessary
+  }
+};
+
 export const notifyTeamOfNewMeeting = async (teamName, teamUserIds) => {
   for (const userId of teamUserIds) {
     console.log(`Processing user: ${userId}`);
