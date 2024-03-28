@@ -10,7 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import MeetingService from "../meetingService";
 import Service from "../service";
-import { handleNotifyPingPress } from "../notification";
+import {
+  handleNotifyPingPress,
+  notifyTeamOfNewMeeting,
+  notifyUsersAboutTeamCreation,
+  notifyUsersOfScheduledMeeting,
+} from "../notification";
 import { useUserIdContext } from "../UserIdContext";
 
 const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
@@ -34,7 +39,11 @@ const MeetingProgressScreen = ({ navigation, route }) => {
   const [members, setMembers] = useState([]);
   const [meetingName, setMeetingName] = useState(""); // State to store meeting name
   const { addUserId } = useUserIdContext();
-
+  const [memberIDs, setMemberIds] = useState([]);
+  const extractUserIds = (memberData) => {
+    const userIds = memberData.map((member) => member.id);
+    return userIds;
+  };
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -42,20 +51,23 @@ const MeetingProgressScreen = ({ navigation, route }) => {
         setMeetingName(meetingData.meetingName); // Assuming the meeting data has a 'name' field
 
         const entries = Object.entries(meetingData.hasUserVoted);
-
         // Fetch user names based on their IDs and update the state
         const memberDataPromises = entries.map(async ([userId, hasVoted]) => {
           const userData = await Service.getUserById(userId);
           addUserId(userId);
           return { id: userId, name: userData.userName, hasVoted };
         });
-
         const memberData = await Promise.all(memberDataPromises);
         setMembers(memberData);
+        const memberIDs = extractUserIds(memberData);
+        setMemberIds(memberIDs);
         // Check if all members have voted
         const isMeetingSet = meetingData.isMeetingSet;
         if (isMeetingSet) {
+          console.log(memberIDs);
+          // notifyUsersOfScheduledMeeting(memberIDs, meetingName);
           setTimeout(() => {
+            console.log(memberIDs);
             // Navigate to MeetingSuccessScreen
             navigation.navigate("MeetingSuccessScreen", {
               meetingId: meetingId,
@@ -73,6 +85,7 @@ const MeetingProgressScreen = ({ navigation, route }) => {
   const handlePingPress = (userId, userName) => {
     handleNotifyPingPress(userId, meetingName);
     Alert.alert("You have pinged " + userName);
+    notifyUsersOfScheduledMeeting(memberIDs, meetingName);
     navigation.navigate("MeetingSuccessScreen");
     console.log(`Ping ${userId}`);
   };
