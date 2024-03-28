@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Service from '../service'; // Adjust the path accordingly
+import Service from '../service';
 
 const PendingMeetings = () => {
-  const navigation = useNavigation(); // Use the useNavigation hook to access navigation
-  const userId = '65fbb7ddc33e451fd0cff3fa'; // Hardcoded user ID
+  const navigation = useNavigation();
+  const userId = '65fbb7ddc33e451fd0cff3fa';
   const [votedMeetings, setVotedMeetings] = useState({});
   const [notVotedMeetings, setNotVotedMeetings] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("Fetching voted meetings");
         const votedData = await Service.getPendingUserVotedMeetings(userId);
+        console.log("Fetched voted meetings:", votedData);
         const notVotedData = await Service.getPendingUserNotVotedMeetings(userId);
+        console.log("Fetched not voted meetings:", notVotedData);
         setVotedMeetings(votedData || {});
         setNotVotedMeetings(notVotedData || {});
       } catch (error) {
@@ -25,20 +28,24 @@ const PendingMeetings = () => {
   }, []);
 
   const navigateToCommonSlots = (meetingId) => {
-    navigation.navigate("CommonSlots", { meetingId }); // Navigate to CommonSlots screen with meetingId
+    console.log(`Navigating to CommonSlots with meetingId: ${meetingId}`);
+    navigation.navigate("CommonSlots", { meetingId });
   };
 
   const renderMeetings = (data, isNotVotedSection = false) => {
     if (!data || typeof data !== 'object') {
+      console.log("Data is not an object:", data);
       return null;
     }
 
     return Object.entries(data).map(([teamString, meetingsArray]) => {
       if (!meetingsArray || meetingsArray.length === 0) {
-        return null; // Don't render the team name if there are no meetings
+        console.log(`No meetings for team: ${teamString}`);
+        return null;
       }
 
       const teamName = teamString.match(/teamName=([^,]+)/)[1];
+      console.log(`Rendering meetings for team: ${teamName}`);
       return (
         <View key={teamName} style={styles.teamContainer}>
           <Text style={styles.teamName}>{teamName}</Text>
@@ -69,7 +76,7 @@ const PendingMeetings = () => {
       
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Pending Meetings - Not Voted</Text>
-        {renderMeetings(notVotedMeetings, true)} 
+        {renderMeetings(notVotedMeetings, true)}
       </View>
     </ScrollView>
   );
