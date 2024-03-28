@@ -15,50 +15,6 @@ const HomePage = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
   const { meetingIds } = useMeetingIdContext();
 
-  const calculateVotes = (hasUserVoted) => {
-    return hasUserVoted
-      ? Object.values(hasUserVoted).filter((voted) => voted).length
-      : 0;
-  };
-
-  const voteCountText = (meeting) => {
-    const votedCount = calculateVotes(meeting.hasUserVoted);
-    return `${votedCount}/${meeting.userCount} Voted`;
-  };
-
-  const handleDeleteMeeting = (meetingId) => {
-    Alert.alert(
-      "Delete Meeting",
-      "Are you sure you want to delete this meeting?",
-      [
-        {
-          text: "No",
-          onPress: () => console.log("Deletion cancelled."),
-          style: "cancel",
-        },
-        {
-          text: "Yes",
-          onPress: () => {
-            MeetingService.deleteMeeting(meetingId);
-            console.log(`Meeting with id ${meetingId} deleted.`);
-            setMeetings(meetings.filter((meeting) => meeting.id !== meetingId));
-          },
-        },
-      ]
-    );
-  };
-
-  const formatDate = (dateString) => {
-    const options = {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    };
-    return new Date(dateString).toLocaleDateString("en-US", options);
-  };
-
   useEffect(() => {
     const fetchMeetings = async () => {
       const fetchedMeetings = [];
@@ -76,56 +32,83 @@ const HomePage = ({ navigation }) => {
     fetchMeetings();
   }, [meetingIds]);
 
+  const handleDeleteMeeting = (meetingId) => {
+    Alert.alert(
+      "Delete Meeting",
+      "Are you sure you want to delete this meeting?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            MeetingService.deleteMeeting(meetingId);
+            setMeetings(meetings.filter((meeting) => meeting.id !== meetingId));
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-US", options);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
-        {meetings
-          .filter((m) => m.isMeetingSet)
-          .map((meeting) => (
-            <View key={meeting.id} style={styles.meetingCard}>
-              <Text style={styles.courseText}>{meeting.meetingName}</Text>
-              <Text style={styles.descriptionText}>
-                {formatDate(meeting.meetingStartDateTime)} -{" "}
-                {formatDate(meeting.meetingEndDateTime)}
-              </Text>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("RescheduleMeeting", {
-                    meetingId: meeting.id,
-                  })
-                }
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>Reschedule</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDeleteMeeting(meeting.id)}
-              >
-                <Ionicons name="trash-outline" size={24} color="red" />
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+        {meetings.map((meeting) => (
+          <View key={meeting.id} style={styles.meetingCard}>
+            <Text style={styles.courseText}>{meeting.meetingName}</Text>
+            <Text style={styles.descriptionText}>
+              {formatDate(meeting.meetingStartDateTime)} - {formatDate(meeting.meetingEndDateTime)}
+            </Text>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("RescheduleMeeting", {
+                  meetingId: meeting.id,
+                })
+              }
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Reschedule</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDeleteMeeting(meeting.id)}
+            >
+              <Ionicons name="trash-outline" size={24} color="red" />
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
       <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("MeetingConfiguration");
-        }}
+        onPress={() => navigation.navigate("MeetingConfiguration")}
         style={styles.floatingButton}
       >
-        <Ionicons name="calendar" size={24} color="white" />
+        <Ionicons name="calendar" size={30} color="white" />
+        <Text style={styles.buttonLabel}>Meeting Config</Text>
       </TouchableOpacity>
 
-      {/* Ensure this button is also included as it was in your original code */}
       <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("CreateTeam");
-        }}
+        onPress={() => navigation.navigate("CreateTeam")}
         style={styles.leftFloatingButton}
       >
-        <Ionicons name="people" size={24} color="white" />
+        <Ionicons name="people" size={30} color="white" />
+        <Text style={styles.buttonLabel}>Create Team</Text>
       </TouchableOpacity>
     </View>
   );
@@ -139,9 +122,6 @@ const styles = StyleSheet.create({
   scrollView: {
     marginHorizontal: 20,
     marginBottom: 100,
-  },
-  meetingsContainer: {
-    marginTop: 20,
   },
   sectionTitle: {
     fontSize: 18,
@@ -162,48 +142,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
   },
-  timeText: {
-    fontSize: 12,
-    color: "#999",
-  },
-  votesText: {
-    fontSize: 12,
-    color: "#999",
-    marginTop: 4,
-  },
   button: {
     marginTop: 10,
     backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
+    alignItems: 'center',
   },
   buttonText: {
     color: "white",
     textAlign: "center",
-  },
-  floatingButton: {
-    backgroundColor: "black",
-    position: "absolute",
-    bottom: 30,
-    right: 30,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
-  },
-  leftFloatingButton: {
-    backgroundColor: "black",
-    position: "absolute",
-    bottom: 30,
-    left: 30,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
   },
   deleteButton: {
     flexDirection: "row",
@@ -214,9 +162,41 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   deleteButtonText: {
-    marginLeft: 5,
-    color: "red",
+  marginLeft: 5,
+  color: "red",
   },
-});
-
-export default HomePage;
+  floatingButton: {
+  backgroundColor: "black",
+  position: "absolute",
+  bottom: 30,
+  right: 30,
+  width: 70, // Increased size
+  height: 70, // Increased size
+  borderRadius: 35, // Half the width/height to maintain the circle shape
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1,
+  padding: 8, // Padding for the text
+  },
+  leftFloatingButton: {
+  backgroundColor: "black",
+  position: "absolute",
+  bottom: 30,
+  left: 30,
+  width: 70, // Increased size
+  height: 70, // Increased size
+  borderRadius: 35, // Half the width/height to maintain the circle shape
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1,
+  padding: 8, // Padding for the text
+  },
+  buttonLabel: {
+  color: "white",
+  fontSize: 12,
+  textAlign: "center",
+  paddingTop: 4, // Space between the icon and text label
+  },
+  });
+  
+  export default HomePage;

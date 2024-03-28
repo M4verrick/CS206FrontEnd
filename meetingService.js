@@ -248,6 +248,30 @@ const deleteMeeting = (meetingId) => {
   );
 };
 
+const getPendingUserNotVotedMeetings = (userId) => {
+  return axios.get(API_URL + `user/${userId}/getPendingUserNotVotedMeetings`,
+  ).then((response) => {
+    const userNotVoted = response.data;
+    return userNotVoted
+  })
+  .catch((error) => {
+    console.error("Error fetching information:", error);
+    throw error;
+  });
+}
+
+const getPendingUserVotedMeetings = (userId) => {
+  return axios.get(API_URL + `user/${userId}/getPendingUserVotedMeetings`,
+  ).then((response) => {
+    const userNotVoted = response.data;
+    return userNotVoted
+  })
+  .catch((error) => {
+    console.error("Error fetching information:", error);
+    throw error;
+  });
+}
+
 // const getUserVoted = (meetingId) => {
 //   return axios
 //     .get(API_URL + `meeting/${meetingId}/getMeeting`)
@@ -272,5 +296,7 @@ const MeetingService = {
   rescheduleMeetingForConsecutive,
   deleteConsecutiveMeetings,
   deleteMeeting,
+  getPendingUserNotVotedMeetings,
+  getPendingUserVotedMeetings
 };
 export default MeetingService;
