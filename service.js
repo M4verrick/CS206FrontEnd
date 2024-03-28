@@ -3,8 +3,8 @@ import axios from "axios";
 //need change to ip address
 
 // const API_URL = "http://10.124.144.51:8080/api/v1/";
-const API_URL = "http://10.87.13.193:8080/api/v1/";
-const API_URL_GOOGLE = "http://10.87.13.193:8080/";
+const API_URL = "http://172.20.10.3:8080/api/v1/";
+const API_URL_GOOGLE = "http://172.20.10.3:8080/";
 // const API_URL = "http://192.168.2.171:8080/api/v1/";
 // const API_URL_GOOGLE = "http://192.168.2.171:8080/";
 // const API_URL = "http://10.87.13.193:8080/api/v1/";
@@ -35,6 +35,23 @@ const signUp = async (userName, userEmail, userPassword) => {
 const getUserById = (userId) => {
   return axios
     .get(API_URL + `user/${userId}/getUser`, {}, { withCredentials: true })
+    .then((response) => {
+      const user = response.data;
+      return user;
+    })
+    .catch((error) => {
+      console.error("Error fetching information:", error);
+      throw error;
+    });
+};
+
+const getAllTeamAndMeetings = (userId) => {
+  return axios
+    .get(
+      API_URL + `user/${userId}/getAllTeamAndMeetings`,
+      {},
+      { withCredentials: true }
+    )
     .then((response) => {
       const user = response.data;
       return user;
@@ -237,6 +254,7 @@ const Service = {
   getPendingUserVotedMeetings, // Add this line
   getPendingUserNotVotedMeetings, // And this line
   getUserEvents,
+  getAllTeamAndMeetings,
 };
 
 export default Service;

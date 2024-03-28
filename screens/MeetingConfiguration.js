@@ -14,6 +14,7 @@ import MeetingService from "../meetingService";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Service from "../service";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
+import { useUserIdContext } from "../UserIdContext";
 
 const MeetingConfigurationScreen = ({ navigation }) => {
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -31,13 +32,13 @@ const MeetingConfigurationScreen = ({ navigation }) => {
     start: false,
     end: false,
   });
+  const { userTeamIds } = useUserTeamIdContext();
 
   const [showDatePicker, setShowDatePicker] = useState({
     start: false,
     end: false,
   });
 
-  const { userTeamIds } = useUserTeamIdContext();
   const getIsoStringWithLocalTimezone = (date) => {
     const timezoneOffsetInMinutes = date.getTimezoneOffset();
     const timezoneOffsetInMs = timezoneOffsetInMinutes * 60000;
@@ -45,6 +46,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
     const localTime = new Date(date.getTime() - timezoneOffsetInMs);
     return localTime.toISOString().split(".")[0] + "Z"; // Removing milliseconds
   };
+  console.log(userTeamIds);
 
   const getDurationInSeconds = (duration) => {
     switch (duration) {

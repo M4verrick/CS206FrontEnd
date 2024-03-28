@@ -11,11 +11,14 @@ import {
 } from "react-native";
 import Service from "../service";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useUserIdContext } from "../UserIdContext";
+import { useUserTeamIdContext } from "../UserTeamIdContext";
 
 const NewTeamScreen = () => {
   const [teamName, setTeamName] = useState("");
   const [email, setEmail] = useState("");
   const [teamEmails, setTeamEmails] = useState([]);
+  const { addUserTeamId } = useUserTeamIdContext();
 
   const handleAddEmail = () => {
     if (email && !teamEmails.includes(email)) {
@@ -38,6 +41,7 @@ const NewTeamScreen = () => {
   const handleCreateTeam = async () => {
     try {
       const response = await Service.createTeam(teamName, teamEmails);
+      addUserTeamId(response._id);
       // Handle the response as needed, perhaps navigating to a new screen or showing a success message
       Alert.alert(
         "Team Created",
