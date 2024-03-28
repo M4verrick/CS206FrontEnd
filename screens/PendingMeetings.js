@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
-
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Service from '../service';
 
-const PendingMeetingsPage = ({ navigation }) => {
-  const [pendingVotedMeetings, setPendingVotedMeetings] = useState([]);
-  const [pendingNotVotedMeetings, setPendingNotVotedMeetings] = useState([]);
-  const [error, setError] = useState(null); // Added state to track errors
-  const userId = '65fbb7ddc33e451fd0cff3fa'; // Replace with actual user ID source
+const PendingMeetings = () => {
+  const navigation = useNavigation();
+  const userId = '65fbb7ddc33e451fd0cff3fa';
+  const [votedMeetings, setVotedMeetings] = useState({});
+  const [notVotedMeetings, setNotVotedMeetings] = useState({});
 
   useEffect(() => {
-    const fetchMeetings = async () => {
+    const fetchData = async () => {
       try {
         const votedResponse = await Service.getPendingUserVotedMeetings(userId);
         const notVotedResponse = await Service.getPendingUserNotVotedMeetings(userId);
         
-        // console.log(votedResponse.data)
         // Check if data is present and is an array before setting it
         if (Array.isArray(votedResponse.data)) {
           setPendingVotedMeetings(votedResponse.data);
@@ -29,51 +23,118 @@ const PendingMeetingsPage = ({ navigation }) => {
           setPendingNotVotedMeetings(notVotedResponse.data);
         }
       } catch (error) {
-        console.error('Error fetching meetings:', error);
-        setError(error); // Setting the error state
+        console.error("Error fetching meetings data:", error);
       }
     };
 
-    fetchMeetings();
+    fetchData();
   }, []);
 
   // console.log(pendingNotVotedMeetings)
   // console.log(pendingVotedMeetings)
 
-  const renderMeetingCard = (meeting) => (
-    <View key={meeting.id} style={styles.meetingCard}>
-      <Text style={styles.meetingName}>{meeting.meetingName}</Text>
-      <Text style={styles.meetingDetails}>
-        Votes: {`${Object.keys(meeting.hasUserVoted).length}/${meeting.userCount}`}
-      </Text>
-      {/* Render additional buttons and actions as necessary */}
-    </View>
-  );
+  const navigateToCommonSlots = (meetingId) => {
+    console.log(`Navigating to CommonSlots with meetingId: ${meetingId}`);
+    navigation.navigate("CommonSlots", { meetingId });
+  };
 
-  if (error) {
-    // Render an error message if there's an error
-    return (
-      <View style={styles.container}>
-        <Text>Failed to load meetings. Please try again later.</Text>
-      </View>
-    );
-  }
+  const renderMeetings = (data, isNotVotedSection = false) => {
+    if (!data || typeof data !== 'object') {
+      console.log("Data is not an object:", data);
+      return null;
+    }
+
+    return Object.entries(data).map(([teamString, meetingsArray]) => {
+      if (!meetingsArray || meetingsArray.length === 0) {
+        console.log(`No meetings for team: ${teamString}`);
+        return null;
+      }
+
+      const teamName = teamString.match(/teamName=([^,]+)/)[1];
+      console.log(`Rendering meetings for team: ${teamName}`);
+      return (
+        <View key={teamName} style={styles.teamContainer}>
+          <Text style={styles.teamName}>{teamName}</Text>
+          {meetingsArray.map((meeting, index) => (
+            <View key={index} style={styles.meetingContainer}>
+              <Text style={styles.meetingName}>{meeting.meetingName || "Unnamed Meeting"}</Text>
+              {isNotVotedSection && (
+                <TouchableOpacity
+                  style={styles.voteButton}
+                  onPress={() => navigateToCommonSlots(meeting.id)}
+                >
+                  <Text style={styles.voteButtonText}>Vote</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
+        </View>
+      );
+    });
+  };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={styles.sectionTitle}>Meetings I've Voted On</Text>
-        {pendingVotedMeetings.map(renderMeetingCard)}
-        <Text style={styles.sectionTitle}>Meetings Pending My Vote</Text>
-        {pendingNotVotedMeetings.map(renderMeetingCard)}
-      </ScrollView>
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>Pending Meetings - Voted</Text>
+        {renderMeetings(votedMeetings)}
+      </View>
+      
+      <View style={styles.sectionContainer}>
+        <Text style={styles.sectionTitle}>Pending Meetings - Not Voted</Text>
+        {renderMeetings(notVotedMeetings, true)}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  // Define your styles here, reuse the styles from your HomePage or create new ones as needed.
-  // ...
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  sectionContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    paddingHorizontal: '10%',
+    paddingBottom: 20,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
+    paddingVertical: 10,
+  },
+  teamContainer: {
+    marginTop: 10,
+  },
+  teamName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+    paddingBottom: 5,
+  },
+  meetingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  meetingName: {
+    fontSize: 18,
+    color: '#000',
+  },
+  voteButton: {
+    backgroundColor: '#000',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  voteButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
 });
 
-export default PendingMeetingsPage;
+export default PendingMeetings;
