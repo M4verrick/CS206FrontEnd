@@ -29,8 +29,6 @@ const CommonTimeslots = ({ navigation, route }) => {
   const finalMap = {};
 
   useEffect(() => {
-    console.log("USERID IN COMMONTIMESLOTS " + userId);
-    console.log(meetingId);
     const fetchMeeting = async () => {
       try {
         const commonTimeslots = await MeetingService.getCommonAvailabilities(
@@ -39,7 +37,6 @@ const CommonTimeslots = ({ navigation, route }) => {
         // const meetingData = await axios.get(`${API_URL}/meeting/${meetingId}/getCommonAvailabilities`);
         // const commonTimeslots = meetingData.data;
         const entries = Object.entries(commonTimeslots);
-        console.log(entries);
         setTimeslots(entries);
       } catch (error) {
         console.log(error);
@@ -110,13 +107,11 @@ const CommonTimeslots = ({ navigation, route }) => {
   };
 
   const handleContinue = async (finalMap) => {
-    console.log(finalMap);
     MeetingService.addVote(meetingId, userId, finalMap)
       // axios.put(`${API_URL}/meeting/${meetingId}/${userId}/addVote`, finalMap)
       .then((response) => {
         console.log("POST request successful:", response.data);
         Alert.alert("Successfully Voted");
-
         if (response.data == "User Voted Successfully") {
           setTimeout(() => {
             navigation.navigate("MeetingProgressScreen", {

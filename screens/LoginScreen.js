@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
         addUserTeamId([...user.teamIds]);
         addUserId(user.id);
         console.log("USER ID: " + user.id);
-        navigation.navigate("GoogleCalendar", { userId: user.id }); // Navigate to the next screen
+        navigation.navigate("HomePage", { userId: user.id }); // Navigate to the next screen
       } else {
         // If the user entity is not returned, treat it as a failed login
         Alert.alert(

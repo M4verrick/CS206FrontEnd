@@ -42,7 +42,7 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
 
   const handleRescheduleConfirm = () => {
     console.log("Reschedule confirmed");
-    navigation.navigate("MeetingList");
+    navigation.navigate("HomePage");
   };
 
   const handleRescheduleDecline = () => {

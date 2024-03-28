@@ -34,6 +34,61 @@ const sendNotificationToUserToVote = async (subId, meetingName) => {
     console.error("Error sending notification:", error);
   }
 };
+const sendNotificationToUser = async (subId, teamName) => {
+  try {
+    const response = await axios.post(
+      `https://app.nativenotify.com/api/indie/notification`,
+      {
+        subID: subId, // Use the passed subId for the notification
+        appId: appId,
+        appToken: appToken,
+        title: "Attention",
+        message: `A new team "${teamName}" has been created. Please check it out!`,
+      }
+    );
+    console.log("Notification sent successfully:", response.data);
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+};
+
+const sendNotificationToUserForMeting = async (subId, teamName) => {
+  try {
+    const response = await axios.post(
+      `https://app.nativenotify.com/api/indie/notification`,
+      {
+        subID: subId, // Use the passed subId for the notification
+        appId: appId,
+        appToken: appToken,
+        title: "Attention",
+        message: `A new meeting for "${teamName}" has been created. Please check it out!`,
+      }
+    );
+    console.log("Notification sent successfully:", response.data);
+  } catch (error) {
+    console.error("Error sending notification:", error);
+  }
+};
+
+export const notifyUsersAboutTeamCreation = async (userIds, teamName) => {
+  for (const userId of userIds) {
+    console.log(`Processing notification for userId: ${userId}`);
+    const isRegistered = await isUserRegistered(userId);
+    if (!isRegistered) {
+      console.log(`Registering userId: ${userId}`);
+      registerIndieID(userId, appId, appToken); // Register the user
+      // Consider adding a slight delay after registration to ensure
+      // the registration process is complete before sending a notification.
+      // However, this might not be necessary depending on how registerIndieID functions internally.
+    }
+
+    // Wait a moment after registration before attempting to send a notification
+    setTimeout(() => {
+      console.log(`Sending team creation notification to userId: ${userId}`);
+      sendNotificationToUser(userId, teamName);
+    }, 3000); // Adjust delay as necessary
+  }
+};
 
 export const handleNotifyPingPress = async (subId, meetingName) => {
   console.log("Checking registration for subId:", subId);
@@ -44,4 +99,25 @@ export const handleNotifyPingPress = async (subId, meetingName) => {
     registerIndieID(subId, 20396, "dawozslCZUCVBogYZ1F3t4"); // Register for notifications
   }
   sendNotificationToUserToVote(subId, meetingName);
+};
+export const notifyTeamOfNewMeeting = async (teamName, teamUserIds) => {
+  for (const userId of teamUserIds) {
+    console.log(`Processing user: ${userId}`);
+    try {
+      // Check if the user is registered for notifications
+      const isRegistered = await isUserRegistered(userId);
+      if (!isRegistered) {
+        console.log(`User ${userId} is not registered. Registering now...`);
+        // Register the user if they are not registered
+        await registerIndieID(userId, appId, appToken);
+        console.log(`User ${userId} registered successfully.`);
+      }
+      // After ensuring the user is registered, send the notification
+      console.log(`Sending notification to user: ${userId}`);
+      await sendNotificationToUserForMeting(userId, teamName);
+      console.log(`Notification sent to user: ${userId}`);
+    } catch (error) {
+      console.error(`Error processing user ${userId}:`, error);
+    }
+  }
 };

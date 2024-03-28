@@ -12,7 +12,7 @@ const PendingMeetingsPage = ({ navigation }) => {
   const [pendingVotedMeetings, setPendingVotedMeetings] = useState([]);
   const [pendingNotVotedMeetings, setPendingNotVotedMeetings] = useState([]);
   const [error, setError] = useState(null); // Added state to track errors
-  const userId = '65faf4e4eaf97718d8d3d0ca'; // Replace with actual user ID source
+  const userId = '65fbb7ddc33e451fd0cff3fa'; // Replace with actual user ID source
 
   useEffect(() => {
     const fetchMeetings = async () => {
@@ -20,6 +20,7 @@ const PendingMeetingsPage = ({ navigation }) => {
         const votedResponse = await Service.getPendingUserVotedMeetings(userId);
         const notVotedResponse = await Service.getPendingUserNotVotedMeetings(userId);
         
+        // console.log(votedResponse.data)
         // Check if data is present and is an array before setting it
         if (Array.isArray(votedResponse.data)) {
           setPendingVotedMeetings(votedResponse.data);
@@ -35,6 +36,9 @@ const PendingMeetingsPage = ({ navigation }) => {
 
     fetchMeetings();
   }, []);
+
+  // console.log(pendingNotVotedMeetings)
+  // console.log(pendingVotedMeetings)
 
   const renderMeetingCard = (meeting) => (
     <View key={meeting.id} style={styles.meetingCard}>

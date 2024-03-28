@@ -11,11 +11,16 @@ import {
 } from "react-native";
 import Service from "../service";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useUserIdContext } from "../UserIdContext";
+import { useUserTeamIdContext } from "../UserTeamIdContext";
+import { notifyUsersAboutTeamCreation } from "../notification";
 
-const NewTeamScreen = () => {
+const NewTeamScreen = ({ navigation }) => {
   const [teamName, setTeamName] = useState("");
   const [email, setEmail] = useState("");
   const [teamEmails, setTeamEmails] = useState([]);
+  const { addUserTeamId } = useUserTeamIdContext();
+  const [userIds, setUserIds] = useState([]);
 
   const handleAddEmail = () => {
     if (email && !teamEmails.includes(email)) {
@@ -38,13 +43,20 @@ const NewTeamScreen = () => {
   const handleCreateTeam = async () => {
     try {
       const response = await Service.createTeam(teamName, teamEmails);
-      // Handle the response as needed, perhaps navigating to a new screen or showing a success message
+      console.log(response);
+      addUserTeamId(response._id);
+      setUserIds(response.teamUserIds);
+      notifyUsersAboutTeamCreation(userIds, response.teamName);
+      // Use the response data directly for immediate actions
+      console.log("SUCCESSFULLY ADDED USERS : ", response.teamUserIds);
+
       Alert.alert(
         "Team Created",
         `Team ${teamName} has been successfully created.`
       );
+
+      navigation.navigate("HomePage", { userIds: response._id });
     } catch (error) {
-      // Handle any errors that occur during the API call
       Alert.alert(
         "Error",
         "There was a problem creating the team. Please try again."

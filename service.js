@@ -5,6 +5,9 @@ import axios from "axios";
 // const API_URL = "http://10.124.144.51:8080/api/v1/";
 // const API_URL_GOOGLE = "http://10.124.144.51:8080/";
 
+// const API_URL = "http://10.124.144.51:8080/api/v1/";
+// const API_URL_GOOGLE = "http://10.124.144.51:8080/";
+
 // const API_URL = "http://192.168.2.171:8080/api/v1/";
 // const API_URL_GOOGLE = "http://192.168.2.171:8080/";
 
@@ -35,6 +38,7 @@ const signUp = async (userName, userEmail, userPassword) => {
     );
     const data = response.data;
     console.log("Signup successful:", data);
+    return data.id;
   } catch (error) {
     console.error("Error during signup:", error);
     throw error;
@@ -44,6 +48,23 @@ const signUp = async (userName, userEmail, userPassword) => {
 const getUserById = (userId) => {
   return axios
     .get(API_URL + `user/${userId}/getUser`, {}, { withCredentials: true })
+    .then((response) => {
+      const user = response.data;
+      return user;
+    })
+    .catch((error) => {
+      console.error("Error fetching information:", error);
+      throw error;
+    });
+};
+
+const getAllTeamAndMeetings = (userId) => {
+  return axios
+    .get(
+      API_URL + `user/${userId}/getAllTeamAndMeetings`,
+      {},
+      { withCredentials: true }
+    )
     .then((response) => {
       const user = response.data;
       return user;
@@ -84,7 +105,6 @@ const createTeam = async (teamName, teamUserEmails) => {
       { withCredentials: true }
     );
     const inSet = response.data;
-    console.log(inSet);
     return inSet;
   } catch (error) {
     console.error("Error creating team:", error);
@@ -139,8 +159,8 @@ const getTeamById = (teamId) => {
       { withCredentials: true }
     )
     .then((response) => {
-      const teamId = response.data;
-      return teamId;
+      const team = response.data;
+      return team;
     })
     .catch((error) => {
       console.error("Error fetching information:", error);
@@ -246,6 +266,7 @@ const Service = {
   getPendingUserVotedMeetings, // Add this line
   getPendingUserNotVotedMeetings, // And this line
   getUserEvents,
+  getAllTeamAndMeetings,
 };
 
 export default Service;

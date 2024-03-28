@@ -30,11 +30,11 @@ const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
 
 const MeetingProgressScreen = ({ navigation, route }) => {
   // const { meetingId } = route.params;
-  const meetingId = "65faf4e4eaf97718d8d3d0ca";
+  const { meetingId } = route.params;
   const [members, setMembers] = useState([]);
   const [meetingName, setMeetingName] = useState(""); // State to store meeting name
   const { addUserId } = useUserIdContext();
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -73,6 +73,7 @@ const MeetingProgressScreen = ({ navigation, route }) => {
   const handlePingPress = (userId, userName) => {
     handleNotifyPingPress(userId, meetingName);
     Alert.alert("You have pinged " + userName);
+    navigation.navigate("MeetingSuccessScreen");
     console.log(`Ping ${userId}`);
   };
 

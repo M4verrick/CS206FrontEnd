@@ -14,6 +14,8 @@ import MeetingService from "../meetingService";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Service from "../service";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
+import { useUserIdContext } from "../UserIdContext";
+import { notifyTeamOfNewMeeting } from "../notification";
 
 const MeetingConfigurationScreen = ({ navigation }) => {
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -31,13 +33,13 @@ const MeetingConfigurationScreen = ({ navigation }) => {
     start: false,
     end: false,
   });
+  const { userTeamIds } = useUserTeamIdContext();
 
   const [showDatePicker, setShowDatePicker] = useState({
     start: false,
     end: false,
   });
 
-  const { userTeamIds } = useUserTeamIdContext();
   const getIsoStringWithLocalTimezone = (date) => {
     const timezoneOffsetInMinutes = date.getTimezoneOffset();
     const timezoneOffsetInMs = timezoneOffsetInMinutes * 60000;
@@ -109,6 +111,11 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         durationInSeconds,
         frequency
       );
+      const team = await Service.getTeamById(teamId);
+      notifyTeamOfNewMeeting(team.teamName, team.teamUserIds);
+      console.log(team.teamName);
+      console.log(team.teamUserIds);
+
       if (response) {
         Alert.alert("Meeting successfully created!");
         setTimeout(() => {
@@ -121,6 +128,43 @@ const MeetingConfigurationScreen = ({ navigation }) => {
       }
     } catch (error) {
       Alert.alert("There was a problem creating the meeting");
+    }
+  };
+  const handleEndDateChange = (event, selectedDate) => {
+    if (selectedDate < startDate) {
+      Alert.alert("Invalid Date", "End date cannot be before start date.");
+    } else {
+      setEndDate(selectedDate || endDate);
+    }
+  };
+
+  // Adjust your time picker's onChange handler for start time
+  const handleStartTimeChange = (event, selectedTime) => {
+    if (
+      startDate.toDateString() === endDate.toDateString() &&
+      selectedTime > endTime
+    ) {
+      Alert.alert(
+        "Invalid Time",
+        "Start time cannot be after end time on the same day."
+      );
+    } else {
+      setStartTime(selectedTime || startTime);
+    }
+  };
+
+  // Adjust your time picker's onChange handler for end time
+  const handleEndTimeChange = (event, selectedTime) => {
+    if (
+      startDate.toDateString() === endDate.toDateString() &&
+      selectedTime < startTime
+    ) {
+      Alert.alert(
+        "Invalid Time",
+        "End time cannot be before start time on the same day."
+      );
+    } else {
+      setEndTime(selectedTime || endTime);
     }
   };
 
@@ -236,9 +280,8 @@ const MeetingConfigurationScreen = ({ navigation }) => {
           value={endDate}
           mode="date"
           display="default"
-          onChange={(event, selectedDate) =>
-            setEndDate(selectedDate || endDate)
-          }
+          minimumDate={new Date()} // Prevents past dates from being selected
+          onChange={handleEndDateChange}
         />
       )}
 
@@ -256,9 +299,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
           mode="time"
           is24Hour={true}
           display="default"
-          onChange={(event, selectedTime) =>
-            setStartTime(selectedTime || startTime)
-          }
+          onChange={handleStartTimeChange}
         />
       )}
 
@@ -276,9 +317,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
           mode="time"
           is24Hour={true}
           display="default"
-          onChange={(event, selectedTime) =>
-            setEndTime(selectedTime || endTime)
-          }
+          onChange={handleEndTimeChange}
         />
       )}
 

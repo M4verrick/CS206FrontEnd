@@ -21,13 +21,15 @@ const SignUpScreen = () => {
 
   const handleSignUp = () => {
     Service.signUp(username, email, password)
-      .then(() => {
-        // Navigate to the Login screen upon successful sign-up
-        navigation.navigate("Login");
+      .then((data) => {
+        // Assuming 'data' is the resolved value from the signUp Promise
+        // and it contains a serializable 'userid'.
+        // Make sure 'data' contains serializable values only.
+        navigation.navigate("GoogleCalendar", { userid: data.userid });
       })
       .catch((error) => {
-        // handle sign-up errors (e.g., show an alert or set error message state)
         console.error("Sign up error:", error);
+        Alert.alert("Sign Up Failed", "Unable to sign up. Please try again.");
       });
   };
 
