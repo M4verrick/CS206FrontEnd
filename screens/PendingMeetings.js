@@ -2,21 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Service from '../service';
+import { useUserIdContext } from '../UserIdContext'; // Make sure the path is correct
 
 const PendingMeetings = () => {
   const navigation = useNavigation();
-  const userId = '65fbb7ddc33e451fd0cff3fa';
+  const { userId } = useUserIdContext(); // Use userId from context
   const [votedMeetings, setVotedMeetings] = useState({});
   const [notVotedMeetings, setNotVotedMeetings] = useState({});
 
   useEffect(() => {
+    console.log(`Using userId from context: ${userId}`); // Log the userId being used
     const fetchData = async () => {
       try {
-       
         const votedData = await Service.getPendingUserVotedMeetings(userId);
-       
         const notVotedData = await Service.getPendingUserNotVotedMeetings(userId);
-   
         setVotedMeetings(votedData || {});
         setNotVotedMeetings(notVotedData || {});
       } catch (error) {
@@ -24,13 +23,15 @@ const PendingMeetings = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (userId) { // Only fetch data if userId is available
+      fetchData();
+    }
+  }, [userId]); // Add userId as a dependency to useEffect
 
   const navigateToCommonSlots = (meetingId) => {
-    console.log(`Navigating to CommonSlots with meetingId: ${meetingId}`);
     navigation.navigate("CommonSlots", { meetingId });
   };
+
 
   const renderMeetings = (data, isNotVotedSection = false) => {
     if (!data || typeof data !== 'object') {
