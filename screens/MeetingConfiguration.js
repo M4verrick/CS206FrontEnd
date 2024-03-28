@@ -22,7 +22,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [meetingName, setMeetingName] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
-  const [selectedFrequency, setSelectedFrequency] = useState("Once");
+  const [selectedFrequency, setSelectedFrequency] = useState("");
   const [isTeamPickerModalVisible, setTeamPickerModalVisible] = useState(false);
   const [teams, setTeamNames] = useState([]);
   const [startDate, setStartDate] = useState(new Date());

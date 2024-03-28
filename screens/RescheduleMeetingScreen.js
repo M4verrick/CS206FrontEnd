@@ -18,6 +18,8 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
   const { meetingId } = route.params;
   const [teamName, setTeamName] = useState("");
   const [meetingName, setMeetingName] = useState("");
+  const [teamId, setTeamId] = useState("");
+  const [hasMultipleMeetings, setHasMultipleMeetings] = useState();
 
   useEffect(() => {
     const loadMeetingData = async () => {
@@ -32,6 +34,13 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
         );
         setTeamName(teamDetails.teamName); // Update state with the team name
         setMeetingName(meetingDetails.meetingName);
+        setTeamId(meetingDetails.meetingTeamId);
+        if (meetingDetails.otherMeetingsIds.length == 0){
+          setHasMultipleMeetings(false)
+        } else {
+          setHasMultipleMeetings(true)
+        }
+
       } catch (error) {
         console.error("Failed to load meeting or team details:", error);
       }
@@ -40,45 +49,70 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
     loadMeetingData();
   }, [meetingId]);
 
-  const handleRescheduleConfirm = () => {
-    console.log("Reschedule confirmed");
-    navigation.navigate("HomePage");
+  const handleRescheuleAllMeetings = () => {
+    try {
+      MeetingService.rescheduleMeetingForConsecutive(meetingId)
+      console.log("Rescheduling All Meetings")
+    } catch (error){
+      console.log("Failed to reschedule all meetings")
+    }
+    // console.log("Reschedule All Meeting");
+    navigation.navigate("MeetingConfiguration");
   };
 
-  const handleRescheduleDecline = () => {
-    console.log("Reschedule declined");
-    navigation.goBack();
+  const handleRescheduleMeeting = () => {
+    try {
+      MeetingService.rescheduleMeeting(meetingId)
+      console.log("Rescheduling Single Meetings")
+    } catch (error){
+      console.log("Failed to reschedule all meetings")
+    }
+    // console.log("Reschedule All Meeting");
+    navigation.navigate("MeetingConfiguration");
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Ionicons name="calendar" size={60} color="#4e5d78" />
-        <Text style={styles.title}>
-          Reschedule {meetingName} for {teamName}?
-        </Text>
-        <Text style={styles.warning}>
-          WARNING: This action cannot be undone.
-        </Text>
-        <View style={styles.buttonContainer}>
+  <View style={styles.container}>
+    <View style={styles.card}>
+      <Ionicons name="calendar" size={60} color="#4e5d78" />
+      <Text style={styles.title}>
+        Reschedule {meetingName} for {teamName}?
+      </Text>
+      <Text style={styles.warning}>
+        WARNING: This action cannot be undone.
+      </Text>
+      <View style={styles.buttonContainer}>
+        {hasMultipleMeetings ? ( // Check if hasMultipleMeetings is true
+          <>
+            <TouchableOpacity
+              style={[styles.button, styles.confirmButton]}
+              onPress={handleRescheduleMeeting}
+            >
+              {/* <Ionicons name="checkmark-circle" size={24} color="white" /> */}
+              <Text style={styles.buttonText}>Reschedule Single Meeting</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.declineButton]}
+              onPress={handleRescheuleAllMeetings}
+            >
+              {/* <Ionicons name="close-circle" size={24} color="white" /> */}
+              <Text style={styles.buttonText}>Reschedule All Meetings</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
           <TouchableOpacity
             style={[styles.button, styles.confirmButton]}
-            onPress={handleRescheduleConfirm}
+            onPress={handleRescheduleMeeting}
           >
             <Ionicons name="checkmark-circle" size={24} color="white" />
-            <Text style={styles.buttonText}>Confirm</Text>
+            <Text style={styles.buttonText}>Reschedule Single Meeting</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.declineButton]}
-            onPress={handleRescheduleDecline}
-          >
-            <Ionicons name="close-circle" size={24} color="white" />
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
     </View>
-  );
+  </View>
+);
+
 };
 
 const styles = StyleSheet.create({
@@ -120,22 +154,26 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    flexDirection: "column", // Change to column direction
+    justifyContent: "center", // Center the buttons vertically
+    alignItems: "center", // Center the buttons horizontally
+    width: "120%",
+    marginTop: 20, // Add margin to create space between the buttons
   },
+  
   button: {
     paddingVertical: 15,
-    paddingHorizontal: 25,
+    paddingHorizontal: 30,
     borderRadius: 30,
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 10, // Add margin bottom to create space between buttons
   },
   confirmButton: {
-    backgroundColor: "#2a9d8f",
+    backgroundColor: "black",
   },
   declineButton: {
-    backgroundColor: "#e63946",
+    backgroundColor: "black",
   },
   buttonText: {
     marginLeft: 10,
