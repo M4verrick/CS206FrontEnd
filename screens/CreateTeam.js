@@ -14,7 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useUserIdContext } from "../UserIdContext";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
 
-const NewTeamScreen = () => {
+const NewTeamScreen = ({ navigation }) => {
   const [teamName, setTeamName] = useState("");
   const [email, setEmail] = useState("");
   const [teamEmails, setTeamEmails] = useState([]);
@@ -47,6 +47,7 @@ const NewTeamScreen = () => {
         "Team Created",
         `Team ${teamName} has been successfully created.`
       );
+      navigation.navigate("HomePage");
     } catch (error) {
       // Handle any errors that occur during the API call
       Alert.alert(
