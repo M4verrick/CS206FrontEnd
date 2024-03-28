@@ -12,8 +12,8 @@ import MeetingService from "../meetingService"; // Ensure this path matches wher
 import Service from "../service";
 
 const MeetingSuccessScreen = ({ route }) => {
-  const meetingId = "65fd5bc7b874a7163c7d10c4";
-  // const { meetingId } = route.params;
+  // const meetingId = "65fd5bc7b874a7163c7d10c4";
+  const { meetingId } = route.params;
   // State to hold meeting details
   const [meeting, setMeeting] = useState({
     meetingName: "",
