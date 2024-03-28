@@ -17,8 +17,8 @@ import axios from "axios";
 // const API_URL = "http://172.20.10.3:8080/api/v1/";
 
 
-const API_URL = "http://192.168.2.171:8080/api/v1/";
-const API_URL_GOOGLE = "http://192.168.2.171:8080/";
+const API_URL = "http://10.40.15.122:8080/api/v1/";
+const API_URL_GOOGLE = "http://10.40.15.122:8080/";
 // const API_URL_GOOGLE = "http://192.168.2.171.sslip.io:8080/";
 
 // const API_URL = "http://10.124.10.120:8080/api/v1/";
