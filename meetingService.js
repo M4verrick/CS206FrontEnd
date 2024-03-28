@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://10.87.13.193:8080/api/v1/";
+
+const API_URL = "http://10.124.144.51:8080/api/v1/";
 
 axios.defaults.withCredentials = true;
 
@@ -170,7 +171,7 @@ const addVote = async (meetingId, userId, availabilitiesVotes) => {
       },
       { withCredentials: true }
     );
-    const inSet = response.data;
+    const inSet = response;
     console.log(inSet);
     return inSet;
   } catch (error) {

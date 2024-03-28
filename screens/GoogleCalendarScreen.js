@@ -36,7 +36,7 @@ const GoogleCalendarScreen = ({ navigation, route }) => {
         console.log(link);
         // alert("Opening Google Authentication")
         Linking.openURL(link);
-        navigation.navigate("HomePage");
+        navigation.navigate("Login");
       });
     } catch (error) {
       console.log("Error:", error);
