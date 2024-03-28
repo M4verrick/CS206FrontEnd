@@ -17,8 +17,8 @@ import axios from "axios";
 // const API_URL = "http://172.20.10.3:8080/api/v1/";
 
 
-const API_URL = "http://192.168.1.112:8080/api/v1/";
-const API_URL_GOOGLE = "http://192.168.1.112:8080/";
+const API_URL = "http://192.168.2.171:8080/api/v1/";
+const API_URL_GOOGLE = "http://192.168.2.171:8080/";
 // const API_URL_GOOGLE = "http://192.168.2.171.sslip.io:8080/";
 
 // const API_URL = "http://10.124.10.120:8080/api/v1/";
@@ -258,6 +258,16 @@ const getUserEvents = (userId, meetingId) => {
     });
 };
 
+const getAllSetMeetingIds = (userId) => {
+  return axios.get(API_URL + `user/${userId}/${meetingId}/getUserEvents`,
+  ).then((response) => {
+    const setMeetingIds = response.data;
+    return setMeetingIds;
+  }).catch((error) => {
+    console.error(error);
+  })
+}
+
 const Service = {
   createTeam,
   getUserById,
@@ -272,6 +282,7 @@ const Service = {
   getPendingUserNotVotedMeetings, // And this line
   getUserEvents,
   getAllTeamAndMeetings,
+  getAllSetMeetingIds,
 };
 
 export default Service;
