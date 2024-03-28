@@ -12,11 +12,11 @@ const PendingMeetings = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching voted meetings");
+       
         const votedData = await Service.getPendingUserVotedMeetings(userId);
-        console.log("Fetched voted meetings:", votedData);
+       
         const notVotedData = await Service.getPendingUserNotVotedMeetings(userId);
-        console.log("Fetched not voted meetings:", notVotedData);
+   
         setVotedMeetings(votedData || {});
         setNotVotedMeetings(notVotedData || {});
       } catch (error) {
