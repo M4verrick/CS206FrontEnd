@@ -69,7 +69,7 @@ const PendingMeetings = () => {
       
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Pending Meetings - Not Voted</Text>
-        {renderMeetings(notVotedMeetings, true)} {/* Enable voting for the not voted section */}
+        {renderMeetings(notVotedMeetings, true)} 
       </View>
     </ScrollView>
   );
