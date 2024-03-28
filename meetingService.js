@@ -1,7 +1,10 @@
 import axios from "axios";
 
 
-const API_URL = "http://10.87.13.193:8080/api/v1/";
+// const API_URL = "http://10.124.144.51:8080/api/v1/";
+// const API_URL = "http://172.20.10.2:8080/api/v1/";
+const API_URL = "http://192.168.2.171:8080/api/v1/";
+// const API_URL = "http://10.87.13.193:8080/api/v1/";
 
 axios.defaults.withCredentials = true;
 
@@ -120,39 +123,39 @@ const getCommonAvailabilities = async (meetingId) => {
 //                                                @PathVariable(value = "meetingName") String meetingName,
 //                                                @PathVariable(value = "firstDateTimeLimit") LocalDateTime firstDateTimeLimit,
 //                                                @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
-//                                                @PathVariable(value = "durationInSeconds") long durationInSeconds)
-const rescheduleMeeting = (
-  meetingId,
-  teamId,
-  meetingName,
-  firstDateTimeLimit,
-  lastDateTimeLimit,
-  durationInSeconds
-) => {
-  return axios
-    .put(
-      API_URL +
-        `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/rescheduleMeeting`,
-      {
-        meetingId,
-        teamId,
-        meetingName,
-        firstDateTimeLimit,
-        lastDateTimeLimit,
-        durationInSeconds,
-      },
-      { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-      return inSet;
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
-};
+// //                                                @PathVariable(value = "durationInSeconds") long durationInSeconds)
+// const rescheduleMeeting = (
+//   meetingId,
+//   teamId,
+//   meetingName,
+//   firstDateTimeLimit,
+//   lastDateTimeLimit,
+//   durationInSeconds
+// ) => {
+//   return axios
+//     .put(
+//       API_URL +
+//         `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/${durationInSeconds}/rescheduleMeeting`,
+//       {
+//         meetingId,
+//         teamId,
+//         meetingName,
+//         firstDateTimeLimit,
+//         lastDateTimeLimit,
+//         durationInSeconds,
+//       },
+//       { withCredentials: true }
+//     )
+//     .then((response) => {
+//       const inSet = response.data;
+//       console.log(inSet);
+//       return inSet;
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching information:", error);
+//       throw error;
+//     });
+// };
 
 // @PutMapping("/{meetingId}/{userId}/{availabilitiesVotes}/addVote")
 // public ResponseEntity<?> addVote
@@ -188,40 +191,52 @@ const addVote = async (meetingId, userId, availabilitiesVotes) => {
 //                                            @PathVariable(value = "lastDateTimeLimit") LocalDateTime lastDateTimeLimit,
 //                                            @PathVariable(value = "frequency") String frequency,
 //                                            @PathVariable(value = "durationInSeconds") long durationInSeconds)
-const rescheduleMeetingForConsecutive = (
-  meetingId,
-  teamId,
-  meetingName,
-  firstDateTimeLimit,
-  lastDateTimeLimit,
-  durationInSeconds,
-  frequency
-) => {
-  return axios
-    .post(
-      API_URL +
-        `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/
-                        ${durationInSeconds}/${frequency}/rescheduleMeetingForConsecutive`,
-      {
-        meetingId,
-        teamId,
-        meetingName,
-        firstDateTimeLimit,
-        lastDateTimeLimit,
-        durationInSeconds,
-        frequency,
-      },
-      { withCredentials: true }
-    )
-    .then((response) => {
-      const inSet = response.data;
-      console.log(inSet);
-    })
-    .catch((error) => {
-      console.error("Error fetching information:", error);
-      throw error;
-    });
-};
+// const rescheduleMeetingForConsecutive = (
+//   meetingId,
+//   teamId,
+//   meetingName,
+//   firstDateTimeLimit,
+//   lastDateTimeLimit,
+//   durationInSeconds,
+//   frequency
+// ) => {
+//   return axios
+//     .post(
+//       API_URL +
+//         `meeting/${meetingId}/${teamId}/${meetingName}/${firstDateTimeLimit}/${lastDateTimeLimit}/
+//                         ${durationInSeconds}/${frequency}/rescheduleMeetingForConsecutive`,
+//       {
+//         meetingId,
+//         teamId,
+//         meetingName,
+//         firstDateTimeLimit,
+//         lastDateTimeLimit,
+//         durationInSeconds,
+//         frequency,
+//       },
+//       { withCredentials: true }
+//     )
+//     .then((response) => {
+//       const inSet = response.data;
+//       console.log(inSet);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching information:", error);
+//       throw error;
+//     });
+// };
+
+const rescheduleMeetingForConsecutive = (meetingId) => {
+  return axios.delete(
+    API_URL + `meeting/${meetingId}/rescheduleMeetingForConsecutive`
+  )
+}
+
+const rescheduleMeeting = (meetingId) => {
+  return axios.delete(
+    API_URL + `meeting/${meetingId}/rescheduleMeeting`
+  )
+}
 
 // @DeleteMapping("{meetingId}/deleteConsecutiveMeetings")
 // public ResponseEntity<?> deleteConsecutiveMeetings
@@ -247,6 +262,30 @@ const deleteMeeting = (meetingId) => {
   );
 };
 
+const getPendingUserNotVotedMeetings = (userId) => {
+  return axios.get(API_URL + `user/${userId}/getPendingUserNotVotedMeetings`,
+  ).then((response) => {
+    const userNotVoted = response.data;
+    return userNotVoted
+  })
+  .catch((error) => {
+    console.error("Error fetching information:", error);
+    throw error;
+  });
+}
+
+const getPendingUserVotedMeetings = (userId) => {
+  return axios.get(API_URL + `user/${userId}/getPendingUserVotedMeetings`,
+  ).then((response) => {
+    const userNotVoted = response.data;
+    return userNotVoted
+  })
+  .catch((error) => {
+    console.error("Error fetching information:", error);
+    throw error;
+  });
+}
+
 // const getUserVoted = (meetingId) => {
 //   return axios
 //     .get(API_URL + `meeting/${meetingId}/getMeeting`)
@@ -271,5 +310,7 @@ const MeetingService = {
   rescheduleMeetingForConsecutive,
   deleteConsecutiveMeetings,
   deleteMeeting,
+  getPendingUserNotVotedMeetings,
+  getPendingUserVotedMeetings
 };
 export default MeetingService;

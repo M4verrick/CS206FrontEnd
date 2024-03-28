@@ -23,10 +23,8 @@ const PendingMeetings = () => {
       }
     };
 
-    if (userId) { // Only fetch data if userId is available
-      fetchData();
-    }
-  }, [userId]); // Add userId as a dependency to useEffect
+    fetchData();
+  }, []);
 
   const navigateToCommonSlots = (meetingId) => {
     navigation.navigate("CommonSlots", { meetingId });
