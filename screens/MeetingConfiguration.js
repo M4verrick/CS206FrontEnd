@@ -16,6 +16,8 @@ import Service from "../service";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
 import { useUserIdContext } from "../UserIdContext";
 import { notifyTeamOfNewMeeting } from "../notification";
+import { MaterialIcons } from "@expo/vector-icons"; // Make sure to import MaterialIcons
+
 
 const MeetingConfigurationScreen = ({ navigation }) => {
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -183,6 +185,12 @@ const MeetingConfigurationScreen = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+    <TouchableOpacity
+      style={styles.backButton}
+      onPress={() => navigation.goBack()}
+    >
+      <MaterialIcons name="arrow-back" size={24} color="black" />
+    </TouchableOpacity>
       <Text style={styles.header}>Meeting Configuration</Text>
 
       <Text style={styles.label}>Team</Text>
@@ -375,11 +383,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: "#fff",
+    paddingTop: 50, // Increase padding at the top to push content down
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center", // Center-align the header text
+    marginTop: 20, // Push the header down a bit
+  },
+  backButton: {
+    position: 'absolute',
+    top: 72,  // Adjust the top position as needed, based on your container's paddingTop
+    left: 20,  // Keep it near the left edge
+    zIndex: 10,  // Ensure the button is clickable over other elements
   },
   label: {
     fontSize: 16,

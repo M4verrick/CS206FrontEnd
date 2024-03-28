@@ -45,12 +45,12 @@ export default function App() {
               <Stack.Screen
                 name="MeetingConfiguration"
                 component={MeetingConfigurationScreen}
-                options={{ headerShown: true, title: "Meeting Configuration" }}
+                options={{ headerShown: false, title: "Meeting Configuration" }}
               />
               <Stack.Screen
                 name="CreateTeam"
                 component={NewTeamScreen}
-                options={{ headerShown: true, title: "CreateTeam" }}
+                options={{ headerShown: false, title: "CreateTeam" }}
               />
               <Stack.Screen
                 name="Testpage"
@@ -107,7 +107,7 @@ export default function App() {
               <Stack.Screen
                 name="PendingMeetings"
                 component={PendingMeetings}
-                options={{ headerShown: true, title: "PendingMeetings" }}
+                options={{ headerShown: false, title: "PendingMeetings" }}
               />
               <Stack.Screen
                 name="UserEvents"

@@ -15,6 +15,7 @@ import { useUserIdContext } from "../UserIdContext";
 import { useUserTeamIdContext } from "../UserTeamIdContext";
 import { notifyUsersAboutTeamCreation } from "../notification";
 
+
 const NewTeamScreen = ({ navigation }) => {
   const [teamName, setTeamName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,6 +81,13 @@ const NewTeamScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+       <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <MaterialIcons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
+
       <Text style={styles.header}>Create a New Team</Text>
       <Text style={styles.label}>Team Name</Text>
       <TextInput
@@ -127,8 +135,9 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 30,
+    marginTop:25,
     fontWeight: "bold",
-    fontSize: 50,
+    fontSize: 20,
     color: "black",
   },
   label: {
@@ -215,6 +224,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 25,
     marginVertical: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 72,  // Adjust the top position as needed, based on your container's paddingTop
+    left: 20,  // Keep it near the left edge
+    zIndex: 10,  // Ensure the button is clickable over other elements
   },
   buttonText: {
     // Adapted from the loginButtonText style
