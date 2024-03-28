@@ -11,16 +11,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMeetingIdContext } from "../MeetingIdContext";
 import MeetingService from "../meetingService";
 import Service from "../service";
+import { useUserIdContext } from "../UserIdContext";
 
 const HomePage = ({ navigation }) => {
   const [meetings, setMeetings] = useState([]);
-  const { meetingIds } = useMeetingIdContext();
+  // const { meetingIds } = useMeetingIdContext();
+  const { userId } = useUserIdContext();
 
   useEffect(() => {
     const fetchMeetings = async () => {
+      console.log(userId);
       const fetchedMeetings = [];
-      const setMeetingIds = await Service.getAllSetMeetingIds;
-      for (let id of setMeetingIds) {
+      const meetingIds =  await Service.getAllSetMeetingIds(userId);
+      console.log(meetingIds);
+      for (let id of meetingIds) {
         try {
           const meeting = await MeetingService.getMeeting(id);
           fetchedMeetings.push(meeting);

@@ -259,9 +259,10 @@ const getUserEvents = (userId, meetingId) => {
 };
 
 const getAllSetMeetingIds = (userId) => {
-  return axios.get(API_URL + `user/${userId}/${meetingId}/getUserEvents`,
+  return axios.get(API_URL + `user/${userId}/getSetMeetings`,
   ).then((response) => {
     const setMeetingIds = response.data;
+    console.log(setMeetingIds);
     return setMeetingIds;
   }).catch((error) => {
     console.error(error);
