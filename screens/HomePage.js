@@ -73,7 +73,8 @@ const HomePage = ({ navigation }) => {
           <View key={meeting.id} style={styles.meetingCard}>
             <Text style={styles.courseText}>{meeting.meetingName}</Text>
             <Text style={styles.descriptionText}>
-              {formatDate(meeting.meetingStartDateTime)} - {formatDate(meeting.meetingEndDateTime)}
+              {formatDate(meeting.meetingStartDateTime)} -{" "}
+              {formatDate(meeting.meetingEndDateTime)}
             </Text>
             <TouchableOpacity
               onPress={() =>
@@ -109,6 +110,13 @@ const HomePage = ({ navigation }) => {
       >
         <Ionicons name="people" size={30} color="white" />
         <Text style={styles.buttonLabel}>Create Team</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("PendingMeetings")}
+        style={styles.centerFloatingButton}
+      >
+        <Ionicons name="time-outline" size={30} color="white" />
+        <Text style={styles.buttonLabel}>Pending Meetings</Text>
       </TouchableOpacity>
     </View>
   );
@@ -147,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
     color: "white",
@@ -162,41 +170,57 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   deleteButtonText: {
-  marginLeft: 5,
-  color: "red",
+    marginLeft: 5,
+    color: "red",
   },
   floatingButton: {
-  backgroundColor: "black",
-  position: "absolute",
-  bottom: 30,
-  right: 30,
-  width: 70, // Increased size
-  height: 70, // Increased size
-  borderRadius: 35, // Half the width/height to maintain the circle shape
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1,
-  padding: 8, // Padding for the text
+    backgroundColor: "black",
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    width: 70, // Increased size
+    height: 70, // Increased size
+    borderRadius: 35, // Half the width/height to maintain the circle shape
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    padding: 8, // Padding for the text
   },
   leftFloatingButton: {
-  backgroundColor: "black",
-  position: "absolute",
-  bottom: 30,
-  left: 30,
-  width: 70, // Increased size
-  height: 70, // Increased size
-  borderRadius: 35, // Half the width/height to maintain the circle shape
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1,
-  padding: 8, // Padding for the text
+    backgroundColor: "black",
+    position: "absolute",
+    bottom: 30,
+    left: 30,
+    width: 70, // Increased size
+    height: 70, // Increased size
+    borderRadius: 35, // Half the width/height to maintain the circle shape
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    padding: 8, // Padding for the text
   },
   buttonLabel: {
-  color: "white",
-  fontSize: 12,
-  textAlign: "center",
-  paddingTop: 4, // Space between the icon and text label
+    color: "white",
+    fontSize: 8, // Decrease the font size as needed
+    textAlign: "center",
+    paddingTop: 4, // Adjust the padding if necessary
+    paddingHorizontal: 4, // Add horizontal padding if the text is still too wide
   },
-  });
   
-  export default HomePage;
+  centerFloatingButton: {
+    backgroundColor: "black",
+    position: "absolute",
+    bottom: 30,
+    alignSelf: 'center', // This centers the button horizontally
+    width: 70, // Match the size of your other floating buttons
+    height: 70, // Match the size of your other floating buttons
+    borderRadius: 35, // Half the width/height to maintain the circle shape
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+    padding: 8, // Padding for the text and icon
+  },
+  
+});
+
+export default HomePage;
