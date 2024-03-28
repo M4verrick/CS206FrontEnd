@@ -46,8 +46,8 @@ const RescheduleMeetingScreen = ({ route, navigation }) => {
   };
 
   const handleRescheduleDecline = () => {
-    navigation.goBack();
     console.log("Reschedule declined");
+    navigation.goBack();
   };
 
   return (
