@@ -30,7 +30,7 @@ const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
 
 const MeetingProgressScreen = ({ navigation, route }) => {
   // const { meetingId } = route.params;
-  const meetingId = "660103dae2f6491bffc4a5a8";
+  const meetingId = "65faf4e4eaf97718d8d3d0ca";
   const [members, setMembers] = useState([]);
   const [meetingName, setMeetingName] = useState(""); // State to store meeting name
   const { addUserId } = useUserIdContext();
