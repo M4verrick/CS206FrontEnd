@@ -3,6 +3,8 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import Service from '../service';
 import { useUserIdContext } from '../UserIdContext'; // Make sure the path is correct
+import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons
+
 
 const PendingMeetings = () => {
   const navigation = useNavigation();
@@ -47,6 +49,7 @@ const PendingMeetings = () => {
       console.log(`Rendering meetings for team: ${teamName}`);
       return (
         <View key={teamName} style={styles.teamContainer}>
+          
           <Text style={styles.teamName}>{teamName}</Text>
           {meetingsArray.map((meeting, index) => (
             <View key={index} style={styles.meetingContainer}>
@@ -67,24 +70,38 @@ const PendingMeetings = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Pending Meetings - Voted</Text>
-        {renderMeetings(votedMeetings)}
+    <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialIcons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Pending Meetings</Text>
       </View>
-      
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Pending Meetings - Not Voted</Text>
-        {renderMeetings(notVotedMeetings, true)}
-      </View>
-    </ScrollView>
+      <ScrollView style={styles.container}>
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Pending Meetings - Voted</Text>
+          {renderMeetings(votedMeetings)}
+        </View>
+        
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Pending Meetings - Not Voted</Text>
+          {renderMeetings(notVotedMeetings, true)}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 20, // Top padding to push content down
+    paddingBottom: 200, // Bottom padding to ensure scrolling area
   },
   sectionContainer: {
     borderBottomWidth: 1,
@@ -98,6 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     paddingVertical: 10,
+
   },
   teamContainer: {
     marginTop: 10,
@@ -128,6 +146,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 68,
+    paddingBottom: 20,
+    // Removed borderBottomWidth to eliminate the line under the header
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 72,  // Adjust the top position as needed, based on your container's paddingTop
+    left: 20,  // Keep it near the left edge
+    zIndex: 10,  // Ensure the button is clickable over other elements
+  },
+  
 });
 
 export default PendingMeetings;
