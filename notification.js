@@ -144,7 +144,7 @@ export const notifyUsersOfScheduledMeeting = async (userIds, meetingName) => {
   }
 };
 
-export const notifyTeamOfNewMeeting = async (teamName, teamUserIds) => {
+export const notifyTeamOfNewMeeting = async (teamUserIds, teamName) => {
   for (const userId of teamUserIds) {
     console.log(`Processing user: ${userId}`);
     try {
