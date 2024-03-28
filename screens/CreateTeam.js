@@ -41,6 +41,9 @@ const NewTeamScreen = ({ navigation }) => {
   };
 
   const handleCreateTeam = async () => {
+    if (teamName == null){
+      Alert.alert()
+    }
     try {
       const response = await Service.createTeam(teamName, teamEmails);
       console.log(response);
