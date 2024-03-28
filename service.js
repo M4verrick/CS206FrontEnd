@@ -95,7 +95,6 @@ const createTeam = async (teamName, teamUserEmails) => {
       { withCredentials: true }
     );
     const inSet = response.data;
-    console.log(inSet);
     return inSet;
   } catch (error) {
     console.error("Error creating team:", error);
@@ -150,8 +149,8 @@ const getTeamById = (teamId) => {
       { withCredentials: true }
     )
     .then((response) => {
-      const teamId = response.data;
-      return teamId;
+      const team = response.data;
+      return team;
     })
     .catch((error) => {
       console.error("Error fetching information:", error);
