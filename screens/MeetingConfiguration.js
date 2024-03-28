@@ -112,7 +112,7 @@ const MeetingConfigurationScreen = ({ navigation }) => {
         frequency
       );
       const team = await Service.getTeamById(teamId);
-      notifyTeamOfNewMeeting(team.teamName, team.teamUserIds);
+      notifyTeamOfNewMeeting(team.teamUserIds, team.teamName);
       console.log(team.teamName);
       console.log(team.teamUserIds);
 

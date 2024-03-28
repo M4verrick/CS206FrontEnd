@@ -41,18 +41,16 @@ const NewTeamScreen = ({ navigation }) => {
   };
 
   const handleCreateTeam = async () => {
-    if (teamName == null){
-      Alert.alert()
+    if (teamName == null) {
+      Alert.alert();
     }
     try {
       const response = await Service.createTeam(teamName, teamEmails);
       console.log(response);
       addUserTeamId(response._id);
-      setUserIds(response.teamUserIds);
-      notifyUsersAboutTeamCreation(userIds, response.teamName);
+      notifyUsersAboutTeamCreation(response.teamUserIds, response.teamName);
       // Use the response data directly for immediate actions
       console.log("SUCCESSFULLY ADDED USERS : ", response.teamUserIds);
-
       Alert.alert(
         "Team Created",
         `Team ${teamName} has been successfully created.`
