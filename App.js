@@ -65,7 +65,7 @@ export default function App() {
               <Stack.Screen
                 name="MeetingProgressScreen"
                 component={MeetingProgressScreen}
-                options={{ headerShown: true, title: "Meeting Progress" }}
+                options={{ headerShown: false, title: "Meeting Progress" }}
               />
               <Stack.Screen
                 name="RescheduleMeeting"
@@ -75,7 +75,7 @@ export default function App() {
               <Stack.Screen
                 name="MeetingSuccessScreen"
                 component={MeetingSuccessScreen}
-                options={{ headerShown: true, title: "Successful!" }}
+                options={{ headerShown: false, title: "Successful!" }}
               />
               <Stack.Screen
                 name="ScheduleScreen"

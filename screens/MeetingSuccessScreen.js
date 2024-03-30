@@ -10,8 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import MeetingService from "../meetingService"; // Ensure this path matches where your service is located
 import Service from "../service";
+import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 
 const MeetingSuccessScreen = ({ route }) => {
+  const navigation = useNavigation();
   // const meetingId = "65fd5bc7b874a7163c7d10c4";
   const { meetingId } = route.params;
   // State to hold meeting details
@@ -109,6 +113,15 @@ const MeetingSuccessScreen = ({ route }) => {
 
   return (
     <ScrollView style={styles.scrollView}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => {
+          navigation.navigate('HomePage'); // Use your homepage route name
+        }}
+      >
+        <MaterialIcons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
+
       <View style={styles.container}>
         <Text style={styles.header}>Meeting Success!</Text>
         <Text style={styles.meetingName}>{meeting.meetingName}</Text>
@@ -241,6 +254,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 16,
   },
+  backButton: {
+    position: 'absolute',
+    top: 72,  // Adjust the top position as needed, based on your container's paddingTop
+    left: 20,  // Keep it near the left edge
+    zIndex: 10,  //
+  },
+
   // Add any additional styles you need here
 });
 

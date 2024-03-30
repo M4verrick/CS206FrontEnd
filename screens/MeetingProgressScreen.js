@@ -17,6 +17,7 @@ import {
   notifyUsersOfScheduledMeeting,
 } from "../notification";
 import { useUserIdContext } from "../UserIdContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const MemberItem = ({ name, hasVoted, onPingPress, userId }) => (
   <View style={styles.memberItem}>
@@ -90,6 +91,16 @@ const MeetingProgressScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+   <TouchableOpacity
+    style={styles.backButton}
+    onPress={() => {
+      // Adjust this navigation call to match your homepage route name
+      navigation.navigate('HomePage');
+    }}
+  >
+    <MaterialIcons name="arrow-back" size={24} color="black" />
+  </TouchableOpacity>
+
       {/* Display the meeting name */}
       <Text style={styles.meetingName}>
         {meetingName || "Loading Meeting..."}
@@ -134,7 +145,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
+    marginTop: 15,
   },
   header: {
     fontSize: 20,
@@ -168,6 +180,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   // Add additional styles as necessary
+  backButton: {
+    position: 'absolute',
+    top: 72,  // Adjust the top position as needed, based on your container's paddingTop
+    left: 20,  // Keep it near the left edge
+    zIndex: 10
+  },
+  
 });
 
 export default MeetingProgressScreen;
